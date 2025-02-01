@@ -142,10 +142,10 @@ void on_monitors_changed ( GdkScreen *screen,
   parse_config(data); // also calls paint_context_new() :-(
 
 
-  data->default_pen = paint_context_new (data, GROMIT_PEN, data->red, NULL, 7, 0, GROMIT_ARROW_END,
-                                         5, 10, 15, 25, 1, 0, 0, 0, G_MAXUINT);
-  data->default_eraser = paint_context_new (data, GROMIT_ERASER, data->red, NULL, 75, 0, GROMIT_ARROW_END,
-                                            5, 10, 15, 25, 1, 0, 0, 0, G_MAXUINT);
+  data->default_pen = paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
+                                         5, 10, 15, 25, 1, 0, 0, 1, 1, data->red, "sans-serif", 12, 0, G_MAXUINT);
+  data->default_eraser = paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
+                                            5, 10, 15, 25, 1, 0, 0, 1, 1, data->red, "sans-serif", 12, 0, G_MAXUINT);
 
   if(!data->composited) // set shape
     {
@@ -301,11 +301,17 @@ gboolean on_buttonpress (GtkWidget *win,
   if(data->maxwidth > devdata->cur_context->maxwidth)
     data->maxwidth = devdata->cur_context->maxwidth;
 
-
   if (type == GROMIT_FRAME)
     {
       GromitPaintContext *ctx = devdata->cur_context;
       draw_frame(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color);
+      return TRUE;
+    }
+
+  if (type == GROMIT_COUNTER)
+    {
+      GromitPaintContext *ctx = devdata->cur_context;
+      draw_counter(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->start, ctx->increment, ctx->font_color, ctx->font_face, ctx->font_size);
       return TRUE;
     }
 
@@ -342,7 +348,7 @@ gboolean on_motion (GtkWidget *win,
 
   GromitPaintType type = devdata->cur_context->type;
 
-  if(type == GROMIT_FRAME)
+  if(type == GROMIT_FRAME || type == GROMIT_COUNTER)
     return FALSE;
 
   gdk_device_get_history (ev->device, ev->window,
@@ -472,7 +478,7 @@ gboolean on_buttonrelease (GtkWidget *win,
 
   GromitPaintType type = ctx->type;
 
-  if(type == GROMIT_FRAME)
+  if(type == GROMIT_FRAME || type == GROMIT_COUNTER)
     return FALSE;
 
   if (type == GROMIT_SMOOTH || type == GROMIT_ORTHOGONAL)
@@ -658,8 +664,8 @@ void on_mainapp_selection_received (GtkWidget *widget,
 	      "Keeping default.\n");
 	    }
 	  GromitPaintContext* line_ctx =
-            paint_context_new(data, GROMIT_PEN, fg_color, NULL, thickness, 0, GROMIT_ARROW_END,
-                              5, 10, 15, 25, 0, 0, 0, thickness, thickness);
+            paint_context_new(data, GROMIT_PEN, fg_color, data->transparent, thickness, 0, GROMIT_ARROW_END,
+                              5, 10, 15, 25, 0, 0, 0, 1, 1, data->red, "sans-serif", 12, thickness, thickness);
 
 	  GdkRectangle rect;
 	  rect.x = MIN (startX,endX) - thickness / 2;

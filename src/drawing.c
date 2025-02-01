@@ -3,7 +3,7 @@
 #include "drawing.h"
 #include "main.h"
 
-int min (int x, int y)
+guint min (guint x, guint y)
 {
   return (x > y) ? y : x;
 }
@@ -112,9 +112,9 @@ void draw_arrow (GromitData *data,
 
 void draw_frame (GromitData *data,
     GdkDevice *dev,
-    gint x, gint y,
-    gint xlength, gint ylength,
-    gint radius, gint strokewidth,
+    guint x, guint y,
+    guint xlength, guint ylength,
+    guint radius, guint strokewidth,
     GdkRGBA *fill_color)
 {
   GdkRectangle rect;
@@ -150,6 +150,48 @@ void draw_frame (GromitData *data,
           gdk_cairo_set_source_rgba(devdata->cur_context->paint_ctx, devdata->cur_context->paint_color);
         }
       cairo_stroke(devdata->cur_context->paint_ctx);
+
+      data->modified = 1;
+
+      gdk_window_invalidate_rect(gtk_widget_get_window(data->win), &rect, 0);
+    }
+
+  data->painted = 1;
+}
+
+void draw_counter (GromitData *data,
+    GdkDevice *dev,
+    guint x, guint y,
+    guint xlength, guint ylength,
+    guint radius, guint strokewidth,
+    GdkRGBA *fill_color,
+    gint start, gint increment,
+    GdkRGBA *font_color,
+    gchar *font_face,
+    guint font_size)
+{
+  draw_frame(data, dev, x, y, xlength, ylength, radius, strokewidth, fill_color);
+
+  GdkRectangle rect;
+  GromitDeviceData *devdata = g_hash_table_lookup(data->devdatatable, dev);
+
+  rect.x = x - xlength/2 - strokewidth;
+  rect.y = y - ylength/2 - strokewidth;
+  rect.width = xlength + strokewidth*2;
+  rect.height = ylength + strokewidth*2;
+
+  if(data->debug)
+    g_printerr("DEBUG: draw counter with center %d, %d, width %d, height %d, corner radius %d, fill color %s, start %u, increment %u, font_color %s, font_face %sand font_size %d\n", x, y, xlength, ylength, radius, gdk_rgba_to_string(fill_color), start, increment, gdk_rgba_to_string(font_color), font_face, font_size);
+
+  if (devdata->cur_context->paint_ctx)
+    {
+      cairo_text_extents_t te;
+      gdk_cairo_set_source_rgba(devdata->cur_context->paint_ctx, devdata->cur_context->font_color);
+      cairo_select_font_face (devdata->cur_context->paint_ctx, devdata->cur_context->font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_set_font_size (devdata->cur_context->paint_ctx, devdata->cur_context->font_size);
+      cairo_text_extents (devdata->cur_context->paint_ctx, "123", &te);
+      cairo_move_to (devdata->cur_context->paint_ctx, x + 1 - te.width/2 - te.x_bearing, y - te.height/2 - te.y_bearing);
+      cairo_show_text (devdata->cur_context->paint_ctx, "123");
 
       data->modified = 1;
 

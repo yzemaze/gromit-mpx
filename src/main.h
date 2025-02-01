@@ -69,6 +69,7 @@ typedef enum
   GROMIT_FRAME,
   GROMIT_SMOOTH,
   GROMIT_ORTHOGONAL,
+  GROMIT_COUNTER,
   GROMIT_ERASER,
   GROMIT_RECOLOR
 } GromitPaintType;
@@ -95,6 +96,11 @@ typedef struct
   guint           snapdist;
   guint           xlength;
   guint           ylength;
+  guint           start;
+  guint           increment;
+  GdkRGBA         *font_color;
+  gchar           *font_face;
+  guint           font_size;
   GdkRGBA         *paint_color;
   GdkRGBA         *fill_color;
   cairo_t         *paint_ctx;
@@ -202,6 +208,7 @@ GromitPaintContext *paint_context_new (GromitData *data, GromitPaintType type,
                                        gfloat arrowsize, GromitArrowType arrowtype,
                                        guint simpilfy, guint radius, guint maxangle, guint minlen, guint snapdist,
                                        guint xlength, guint ylength,
+                                       gint start, gint increment, GdkRGBA *font_color, gchar *font_face, guint font_size,
                                        guint minwidth, guint maxwidth);
 void paint_context_free (GromitPaintContext *context);
 
