@@ -116,9 +116,9 @@ void paint_context_print (gchar *name,
   g_printerr ("width: %u, ", context->width);
   g_printerr ("minwidth: %u, ", context->minwidth);
   g_printerr ("maxwidth: %u, ", context->maxwidth);
-  g_printerr ("arrowsize: %.2f, ", context->arrowsize);
   if (context->arrowsize > 0)
     {
+      g_printerr ("arrowsize: %.2f, ", context->arrowsize);
       switch (context->arrow_type) {
       case GROMIT_ARROW_START:
         g_printerr(" arrowtype: start,  ");
