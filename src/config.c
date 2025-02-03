@@ -429,7 +429,7 @@ gboolean parse_config (GromitData *data)
                           token = g_scanner_get_next_token (scanner);
                           if (token != G_TOKEN_STRING)
                             {
-                              g_printerr ("Missing Arrowsize (string)... "
+                              g_printerr ("Missing arrowtype (string)... "
                                           "aborting\n");
                               goto cleanup;
                             }
@@ -441,7 +441,7 @@ gboolean parse_config (GromitData *data)
                             arrowtype = GROMIT_ARROW_DOUBLE;
                           else
                             {
-                              g_printerr ("Arrow type must be \"start\", \"end\", or \"double\"... "
+                              g_printerr ("Arrowtype must be \"start\", \"end\", or \"double\"... "
                                           "aborting\n");
                               goto cleanup;
                             }
