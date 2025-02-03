@@ -206,7 +206,7 @@ void clear_screen (GromitData *data);
 GromitPaintContext *paint_context_new (GromitData *data, GromitPaintType type,
 				       GdkRGBA *fg_color, GdkRGBA *fill_color, guint width,
                                        gfloat arrowsize, GromitArrowType arrowtype,
-                                       guint simpilfy, guint radius, guint maxangle, guint minlen, guint snapdist,
+                                       guint simplify, guint radius, guint maxangle, guint minlen, guint snapdist,
                                        guint xlength, guint ylength,
                                        gint start, gint increment, GdkRGBA *font_color, gchar *font_face, guint font_size,
                                        guint minwidth, guint maxwidth);
