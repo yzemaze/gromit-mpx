@@ -311,8 +311,10 @@ gboolean on_buttonpress (GtkWidget *win,
   if (type == GROMIT_COUNTER)
     {
       GromitPaintContext *ctx = devdata->cur_context;
-      if (data->painted == 0)
+      if (data->cleared == 1) {
         ctx->count = ctx->start;
+        data->cleared = 0;
+      }
       draw_counter(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->count);
       ctx->count += ctx->increment;
       return TRUE;
