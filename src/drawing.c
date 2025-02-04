@@ -165,8 +165,7 @@ void draw_counter (GromitData *data,
     guint xlength, guint ylength,
     guint radius, guint strokewidth,
     GdkRGBA *fill_color,
-    gint count,
-    guint font_size)
+    gint count)
 {
   draw_frame(data, dev, x, y, xlength, ylength, radius, strokewidth, fill_color);
 
@@ -181,21 +180,12 @@ void draw_counter (GromitData *data,
   if (devdata->cur_context->paint_ctx)
     {
       char countstr[4];
-      guint fontsize;
+      guint fontsize = ylength * 0.85;
 
       sprintf(countstr, "%d", count);
 
-      /*
-       * just prevent mis-configurations
-       * auto-fit should only be necessary for 3+ digits
-      */
-      if (devdata->cur_context->font_size > ylength * 0.85)
-        fontsize = ylength * 0.85;
-      else
-        fontsize = devdata->cur_context->font_size;
-
       if(data->debug)
-        g_printerr("DEBUG: draw counter with center %d, %d, width %d, height %d, corner radius %d, fill color %s, count %u and font_size %d\n", x, y, xlength, ylength, radius, gdk_rgba_to_string(fill_color), count, fontsize);
+        g_printerr("DEBUG: draw counter with center %d, %d, width %d, height %d, corner radius %d, fill color %s, count %u and fontsize %d\n", x, y, xlength, ylength, radius, gdk_rgba_to_string(fill_color), count, fontsize);
 
       cairo_text_extents_t te;
       gdk_cairo_set_source_rgba(devdata->cur_context->paint_ctx, devdata->cur_context->paint_color);

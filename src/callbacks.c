@@ -143,9 +143,9 @@ void on_monitors_changed ( GdkScreen *screen,
 
 
   data->default_pen = paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
-                                         5, 10, 15, 25, 1, 0, 0, 1, 1, 12, 0, G_MAXUINT);
+                                         5, 10, 15, 25, 1, 0, 0, 1, 1, 0, G_MAXUINT);
   data->default_eraser = paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
-                                            5, 10, 15, 25, 1, 0, 0, 1, 1, 12, 0, G_MAXUINT);
+                                            5, 10, 15, 25, 1, 0, 0, 1, 1, 0, G_MAXUINT);
 
   if(!data->composited) // set shape
     {
@@ -313,7 +313,7 @@ gboolean on_buttonpress (GtkWidget *win,
       GromitPaintContext *ctx = devdata->cur_context;
       if (data->painted == 0)
         ctx->count = ctx->start;
-      draw_counter(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->count, ctx->font_size);
+      draw_counter(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->count);
       ctx->count += ctx->increment;
       return TRUE;
     }
@@ -668,7 +668,7 @@ void on_mainapp_selection_received (GtkWidget *widget,
 	    }
 	  GromitPaintContext* line_ctx =
             paint_context_new(data, GROMIT_PEN, fg_color, data->transparent, thickness, 0, GROMIT_ARROW_END,
-                              5, 10, 15, 25, 0, 0, 0, 1, 1, 12, thickness, thickness);
+                              5, 10, 15, 25, 0, 0, 0, 1, 1, thickness, thickness);
 
 	  GdkRectangle rect;
 	  rect.x = MIN (startX,endX) - thickness / 2;

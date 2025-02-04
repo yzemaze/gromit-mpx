@@ -129,7 +129,6 @@ enum tool_arguments {
   SYM_FILLCOLOR,
   SYM_START,
   SYM_INCREMENT,
-  SYM_FONTSIZE,
 };
 
 /*
@@ -174,7 +173,6 @@ gboolean parse_config (GromitData *data)
   guint minlen, maxangle, radius, simplify, snapdist;
   guint xlength, ylength;
   gint start, increment;
-  guint font_size;
   GromitArrowType arrowtype;
 
   /* try user config location */
@@ -254,7 +252,6 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 2, "xlength",   (gpointer) SYM_XLENGTH);
   g_scanner_scope_add_symbol (scanner, 2, "ylength",   (gpointer) SYM_YLENGTH);
   g_scanner_scope_add_symbol (scanner, 2, "fillcolor", (gpointer) SYM_FILLCOLOR);
-  g_scanner_scope_add_symbol (scanner, 2, "fontsize",  (gpointer) SYM_FONTSIZE);
   g_scanner_scope_add_symbol (scanner, 2, "start",     (gpointer) SYM_START);
   g_scanner_scope_add_symbol (scanner, 2, "increment", (gpointer) SYM_INCREMENT);
 
@@ -306,7 +303,6 @@ gboolean parse_config (GromitData *data)
           fill_color = data->transparent;
           start = 1;
           increment = 1;
-          font_size = 20;
 
           if (token == G_TOKEN_SYMBOL)
             {
@@ -339,7 +335,6 @@ gboolean parse_config (GromitData *data)
                   fill_color = context_template->fill_color;
                   start = context_template->start;
                   increment = context_template->increment;
-                  font_size = context_template->font_size;
                 }
               else
                 {
@@ -530,12 +525,6 @@ gboolean parse_config (GromitData *data)
                           if (isnan(v)) goto cleanup;
                           increment = v;
                         }
-                      else if ((intptr_t) scanner->value.v_symbol == SYM_FONTSIZE)
-                        {
-                          gfloat v = parse_get_float(scanner, "Missing font size (float)");
-                          if (isnan(v)) goto cleanup;
-                          font_size = v;
-                        }
                       else
                         {
                           g_printerr ("Unknown tool type?????\n");
@@ -565,7 +554,7 @@ gboolean parse_config (GromitData *data)
                                        arrowsize, arrowtype,
                                        simplify, radius, maxangle, minlen, snapdist,
                                        xlength, ylength,
-                                       start, increment, font_size,
+                                       start, increment,
                                        minwidth, maxwidth);
           g_hash_table_insert (data->tool_config, name, context);
         }
