@@ -127,11 +127,9 @@ enum tool_arguments {
   SYM_XLENGTH,
   SYM_YLENGTH,
   SYM_FILLCOLOR,
-  SYM_START = 1,
-  SYM_INCREMENT = 1,
-  SYM_FONTCOLOR,
-  SYM_FONTFACE,
-  SYM_FONTSIZE
+  SYM_START,
+  SYM_INCREMENT,
+  SYM_FONTSIZE,
 };
 
 /*
@@ -170,12 +168,11 @@ gboolean parse_config (GromitData *data)
   gchar *name, *copy;
 
   GromitPaintType type;
-  GdkRGBA *fg_color=NULL, *fill_color=NULL, *font_color=NULL;
+  GdkRGBA *fg_color=NULL, *fill_color=NULL;
   guint width, minwidth, maxwidth;
   gfloat arrowsize;
   guint minlen, maxangle, radius, simplify, snapdist;
   guint xlength, ylength;
-  gchar *font_face;
   gint start, increment;
   guint font_size;
   GromitArrowType arrowtype;
@@ -257,8 +254,6 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 2, "xlength",   (gpointer) SYM_XLENGTH);
   g_scanner_scope_add_symbol (scanner, 2, "ylength",   (gpointer) SYM_YLENGTH);
   g_scanner_scope_add_symbol (scanner, 2, "fillcolor", (gpointer) SYM_FILLCOLOR);
-  g_scanner_scope_add_symbol (scanner, 2, "fontcolor", (gpointer) SYM_FONTCOLOR);
-  g_scanner_scope_add_symbol (scanner, 2, "fontface",  (gpointer) SYM_FONTFACE);
   g_scanner_scope_add_symbol (scanner, 2, "fontsize",  (gpointer) SYM_FONTSIZE);
   g_scanner_scope_add_symbol (scanner, 2, "start",     (gpointer) SYM_START);
   g_scanner_scope_add_symbol (scanner, 2, "increment", (gpointer) SYM_INCREMENT);
@@ -311,8 +306,6 @@ gboolean parse_config (GromitData *data)
           fill_color = data->transparent;
           start = 1;
           increment = 1;
-          font_color = data->red;
-          font_face = "sans-serif";
           font_size = 20;
 
           if (token == G_TOKEN_SYMBOL)
@@ -346,8 +339,6 @@ gboolean parse_config (GromitData *data)
                   fill_color = context_template->fill_color;
                   start = context_template->start;
                   increment = context_template->increment;
-                  font_color = context_template->font_color;
-                  font_face = context_template->font_face;
                   font_size = context_template->font_size;
                 }
               else
@@ -369,7 +360,6 @@ gboolean parse_config (GromitData *data)
           if (token == G_TOKEN_LEFT_PAREN)
             {
               GdkRGBA *color = NULL;
-              char *fontface = NULL;
               g_scanner_set_scope (scanner, 2);
               scanner->config->int_2_float = 1;
               token = g_scanner_get_next_token (scanner);
@@ -540,62 +530,6 @@ gboolean parse_config (GromitData *data)
                           if (isnan(v)) goto cleanup;
                           increment = v;
                         }
-                      else if ((intptr_t) scanner->value.v_symbol == SYM_FONTCOLOR)
-                        {
-                          token = g_scanner_get_next_token (scanner);
-                          if (token != G_TOKEN_EQUAL_SIGN)
-                            {
-                              g_printerr ("Missing \"=\"... aborting\n");
-                              goto cleanup;
-                            }
-                          token = g_scanner_get_next_token (scanner);
-                          if (token != G_TOKEN_STRING)
-                            {
-                              g_printerr ("Missing font color (string)... "
-                                          "aborting\n");
-                              goto cleanup;
-                            }
-                          color = g_malloc (sizeof (GdkRGBA));
-                          if (gdk_rgba_parse (color, scanner->value.v_string))
-                            {
-                              font_color = color;
-                            }
-                          else
-                            {
-                              g_printerr ("Unable to parse font color. "
-                                          "Keeping default.\n");
-                              g_free (color);
-                            }
-                          color = NULL;
-                        }
-                      else if ((intptr_t) scanner->value.v_symbol == SYM_FONTFACE)
-                        {
-                          token = g_scanner_get_next_token (scanner);
-                          if (token != G_TOKEN_EQUAL_SIGN)
-                            {
-                              g_printerr ("Missing \"=\"... aborting\n");
-                              goto cleanup;
-                            }
-                          token = g_scanner_get_next_token (scanner);
-                          if (token != G_TOKEN_STRING)
-                            {
-                              g_printerr ("Missing font face (string)... "
-                                          "aborting\n");
-                              goto cleanup;
-                            }
-                          fontface = g_malloc (sizeof (gchar));
-                          if (scanner->value.v_string)
-                            {
-                              font_face = fontface;
-                            }
-                          else
-                            {
-                              g_printerr ("Unable to parse font face. "
-                                          "Keeping default.\n");
-                              g_free (fontface);
-                            }
-                          fontface = NULL;
-                        }
                       else if ((intptr_t) scanner->value.v_symbol == SYM_FONTSIZE)
                         {
                           gfloat v = parse_get_float(scanner, "Missing font size (float)");
@@ -631,7 +565,7 @@ gboolean parse_config (GromitData *data)
                                        arrowsize, arrowtype,
                                        simplify, radius, maxangle, minlen, snapdist,
                                        xlength, ylength,
-                                       start, increment, font_color, font_face, font_size,
+                                       start, increment, font_size,
                                        minwidth, maxwidth);
           g_hash_table_insert (data->tool_config, name, context);
         }

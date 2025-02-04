@@ -98,8 +98,6 @@ typedef struct
   guint           ylength;
   guint           start;
   guint           increment;
-  GdkRGBA         *font_color;
-  gchar           *font_face;
   guint           font_size;
   GdkRGBA         *paint_color;
   GdkRGBA         *fill_color;
@@ -208,7 +206,7 @@ GromitPaintContext *paint_context_new (GromitData *data, GromitPaintType type,
                                        gfloat arrowsize, GromitArrowType arrowtype,
                                        guint simplify, guint radius, guint maxangle, guint minlen, guint snapdist,
                                        guint xlength, guint ylength,
-                                       gint start, gint increment, GdkRGBA *font_color, gchar *font_face, guint font_size,
+                                       gint start, gint increment, guint font_size,
                                        guint minwidth, guint maxwidth);
 void paint_context_free (GromitPaintContext *context);
 

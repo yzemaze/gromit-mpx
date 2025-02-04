@@ -53,8 +53,6 @@ GromitPaintContext *paint_context_new (GromitData *data,
 				       guint ylength,
 				       gint start,
 				       gint increment,
-				       GdkRGBA *font_color,
-				       gchar *font_face,
 				       guint font_size,
 				       guint minwidth,
 				       guint maxwidth)
@@ -80,8 +78,6 @@ GromitPaintContext *paint_context_new (GromitData *data,
   context->ylength = ylength;
   context->start = start;
   context->increment = increment;
-  context->font_color = font_color;
-  context->font_face = font_face;
   context->font_size = font_size;
 
   context->paint_ctx = cairo_create (data->backbuffer);
@@ -169,8 +165,7 @@ void paint_context_print (gchar *name,
     }
   if (context->type == GROMIT_COUNTER)
     {
-      g_printerr("fontcolor: %s, ", gdk_rgba_to_string(context->font_color));
-      g_printerr("fontface: %s, fontsize: %u, ", context->font_face, context->font_size);
+      g_printerr("fontsize: %u, ", context->font_size);
       g_printerr("start: %d, increment: %d, ", context->start, context->increment);
     }
   g_printerr ("color: %s\n", gdk_rgba_to_string(context->paint_color));
@@ -886,10 +881,10 @@ void setup_main_app (GromitData *data, int argc, char ** argv)
 
   data->default_pen =
     paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
-                       5, 10, 15, 25, 0, 0, 0, 1, 1, data->red, "sans-serif", 12, 1, G_MAXUINT);
+                       5, 10, 15, 25, 0, 0, 0, 1, 1, 12, 1, G_MAXUINT);
   data->default_eraser =
     paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
-                       5, 10, 15, 25, 0, 0, 0, 1, 1, data->red, "sans-serif", 12, 1, G_MAXUINT);
+                       5, 10, 15, 25, 0, 0, 0, 1, 1, 12, 1, G_MAXUINT);
 
   gdk_event_handler_set ((GdkEventFunc) main_do_event, data, NULL);
   gtk_key_snooper_install (snoop_key_press, data);
