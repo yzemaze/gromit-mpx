@@ -79,6 +79,7 @@ GromitPaintContext *paint_context_new (GromitData *data,
   context->start = start;
   context->increment = increment;
   context->font_size = font_size;
+  context->count = start;
 
   context->paint_ctx = cairo_create (data->backbuffer);
 

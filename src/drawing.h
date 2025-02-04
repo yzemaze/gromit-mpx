@@ -19,6 +19,6 @@ typedef struct
 void draw_line (GromitData *data, GdkDevice *dev, gint x1, gint y1, gint x2, gint y2);
 void draw_arrow (GromitData *data, GdkDevice *dev, gint x1, gint y1, gfloat width, gfloat direction);
 void draw_frame (GromitData *data, GdkDevice *dev, guint x, guint y, guint xlength, guint ylength, guint radius, guint strokewidth, GdkRGBA *fill_color);
-void draw_counter (GromitData *data, GdkDevice *dev, guint x, guint y, guint xlength, guint ylength, guint radius, guint strokewidth, GdkRGBA *fill_color, gint start, gint increment, guint font_size);
+void draw_counter (GromitData *data, GdkDevice *dev, guint x, guint y, guint xlength, guint ylength, guint radius, guint strokewidth, GdkRGBA *fill_color, gint count, guint font_size);
 
 #endif

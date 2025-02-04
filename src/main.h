@@ -96,9 +96,10 @@ typedef struct
   guint           snapdist;
   guint           xlength;
   guint           ylength;
-  guint           start;
-  guint           increment;
+  gint            start;
+  gint            increment;
   guint           font_size;
+  gint            count;
   GdkRGBA         *paint_color;
   GdkRGBA         *fill_color;
   cairo_t         *paint_ctx;
