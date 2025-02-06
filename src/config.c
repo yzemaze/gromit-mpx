@@ -127,6 +127,7 @@ enum tool_arguments {
   SYM_START,
   SYM_INCREMENT,
   SYM_FONTFACE,
+  SYM_FONTSIZE,
   SYM_STAMP,
 };
 
@@ -172,6 +173,7 @@ gboolean parse_config (GromitData *data)
   guint minlen, maxangle, radius, simplify, snapdist;
   guint xlength, ylength;
   gint start, increment;
+  guint font_size;
   gchar *font_face, *stamp;
   GromitArrowType arrowtype;
 
@@ -261,6 +263,7 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 2, "start",     (gpointer) SYM_START);
   g_scanner_scope_add_symbol (scanner, 2, "increment", (gpointer) SYM_INCREMENT);
   g_scanner_scope_add_symbol (scanner, 2, "fontface",  (gpointer) SYM_FONTFACE);
+  g_scanner_scope_add_symbol (scanner, 2, "fontsize",  (gpointer) SYM_FONTSIZE);
   g_scanner_scope_add_symbol (scanner, 2, "stamp",     (gpointer) SYM_STAMP);
 
   g_scanner_set_scope (scanner, 0);
@@ -313,6 +316,7 @@ gboolean parse_config (GromitData *data)
           start = 1;
           increment = 1;
           font_face = "sans-serif";
+          font_size = 20;
           stamp = "";
 
           if (token == G_TOKEN_SYMBOL)
@@ -348,6 +352,7 @@ gboolean parse_config (GromitData *data)
                   start = context_template->start;
                   increment = context_template->increment;
                   font_face = context_template->font_face;
+                  font_size = context_template->font_size;
                   stamp = context_template->stamp;
                 }
               else
@@ -539,6 +544,12 @@ gboolean parse_config (GromitData *data)
                           if (isnan(v)) goto cleanup;
                           increment = v;
                         }
+                      else if ((intptr_t) scanner->value.v_symbol == SYM_FONTSIZE)
+                        {
+                          gfloat v = parse_get_float(scanner, "Missing fontsize (float)");
+                          if (isnan(v)) goto cleanup;
+                          font_size = v;
+                        }
                       else if ((intptr_t) scanner->value.v_symbol == SYM_FONTFACE)
                         {
                           token = g_scanner_get_next_token (scanner);
@@ -619,7 +630,7 @@ gboolean parse_config (GromitData *data)
                                        simplify, radius, maxangle, minlen, snapdist,
                                        xlength, ylength,
                                        start, increment,
-                                       font_face, stamp,
+                                       font_face, font_size, stamp,
                                        minwidth, maxwidth);
           g_hash_table_insert (data->tool_config, key2string(keyName), context);
         }

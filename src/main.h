@@ -98,6 +98,7 @@ typedef struct
   guint           snapdist;
   guint           xlength;
   guint           ylength;
+  guint           font_size;
   gint            start;
   gint            increment;
   gint            count;
@@ -226,6 +227,7 @@ GromitPaintContext *paint_context_new (GromitData *data, GromitPaintType type,
                                        guint xlength, guint ylength,
                                        gint start, gint increment,
                                        gchar *font_face,
+                                       guint font_size,
                                        gchar *stamp,
                                        guint minwidth, guint maxwidth);
 void paint_context_free (GromitPaintContext *context);
