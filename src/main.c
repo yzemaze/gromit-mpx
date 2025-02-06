@@ -53,6 +53,8 @@ GromitPaintContext *paint_context_new (GromitData *data,
 				       guint ylength,
 				       gint start,
 				       gint increment,
+				       gchar *font_face,
+				       gchar *stamp,
 				       guint minwidth,
 				       guint maxwidth)
 {
@@ -76,6 +78,8 @@ GromitPaintContext *paint_context_new (GromitData *data,
   context->xlength = xlength;
   context->ylength = ylength;
   context->start = start;
+  context->font_face = font_face;
+  context->stamp = stamp;
   context->increment = increment;
   context->count = start;
 
@@ -120,6 +124,8 @@ void paint_context_print (gchar *name,
       g_printerr ("Orthogonal, "); break;
     case GROMIT_COUNTER:
       g_printerr ("Counter,    "); break;
+    case GROMIT_STAMP:
+      g_printerr ("Stamp,      "); break;
     case GROMIT_ERASER:
       g_printerr ("Eraser,     "); break;
     case GROMIT_RECOLOR:
@@ -157,7 +163,7 @@ void paint_context_print (gchar *name,
       g_printerr("radius: %u, minlen: %u, maxangle: %u, ",
                  context->radius, context->minlen, context->maxangle);
     }
-  if (context->type == GROMIT_FRAME)
+  if (context->type == GROMIT_FRAME || context->type == GROMIT_COUNTER || context->type == GROMIT_STAMP)
     {
       g_printerr("xlength: %u, ylength: %u, radius: %u, ", context->xlength, context->ylength, context->radius);
       g_printerr("fillcolor: %s, ", gdk_rgba_to_string(context->fill_color));
@@ -165,6 +171,10 @@ void paint_context_print (gchar *name,
   if (context->type == GROMIT_COUNTER)
     {
       g_printerr("start: %d, increment: %d, ", context->start, context->increment);
+    }
+  if (context->type == GROMIT_STAMP)
+    {
+      g_printerr("font_face: %s, stamp: %s, ", context->font_face, context->stamp);
     }
   g_printerr ("color: %s\n", gdk_rgba_to_string(context->paint_color));
 }
@@ -867,10 +877,10 @@ void setup_main_app (GromitData *data, int argc, char ** argv)
 
   data->default_pen =
     paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
-                       5, 10, 15, 25, 0, 0, 0, 1, 1, 1, G_MAXUINT);
+                       5, 10, 15, 25, 0, 0, 0, 1, 1, "sans-serif", "", 1, G_MAXUINT);
   data->default_eraser =
     paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
-                       5, 10, 15, 25, 0, 0, 0, 1, 1, 1, G_MAXUINT);
+                       5, 10, 15, 25, 0, 0, 0, 1, 1, "sans-serif", "", 1, G_MAXUINT);
 
   gdk_event_handler_set ((GdkEventFunc) main_do_event, data, NULL);
   gtk_key_snooper_install (snoop_key_press, data);

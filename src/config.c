@@ -126,6 +126,8 @@ enum tool_arguments {
   SYM_FILLCOLOR,
   SYM_START,
   SYM_INCREMENT,
+  SYM_FONTFACE,
+  SYM_STAMP,
 };
 
 /*
@@ -170,6 +172,7 @@ gboolean parse_config (GromitData *data)
   guint minlen, maxangle, radius, simplify, snapdist;
   guint xlength, ylength;
   gint start, increment;
+  gchar *font_face, *stamp;
   GromitArrowType arrowtype;
 
   /* try user config location */
@@ -218,6 +221,7 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 0, "RECT",      (gpointer) GROMIT_RECT);
   g_scanner_scope_add_symbol (scanner, 0, "FRAME",     (gpointer) GROMIT_FRAME);
   g_scanner_scope_add_symbol (scanner, 0, "COUNTER",   (gpointer) GROMIT_COUNTER);
+  g_scanner_scope_add_symbol (scanner, 0, "STAMP",     (gpointer) GROMIT_STAMP);
   g_scanner_scope_add_symbol (scanner, 0, "SMOOTH",    (gpointer) GROMIT_SMOOTH);
   g_scanner_scope_add_symbol (scanner, 0, "ORTHOGONAL",(gpointer) GROMIT_ORTHOGONAL);
   g_scanner_scope_add_symbol (scanner, 0, "ERASER",    (gpointer) GROMIT_ERASER);
@@ -234,7 +238,7 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 1, "BUTTON7", (gpointer) 7);
   g_scanner_scope_add_symbol (scanner, 1, "BUTTON8", (gpointer) 8);
   g_scanner_scope_add_symbol (scanner, 1, "BUTTON9", (gpointer) 9);
-  g_scanner_scope_add_symbol (scanner, 1, "BUTTON10", (gpointer) 10);
+  g_scanner_scope_add_symbol (scanner, 1, "BUTTON10",(gpointer) 10);
   g_scanner_scope_add_symbol (scanner, 1, "SHIFT",   (gpointer) 11);
   g_scanner_scope_add_symbol (scanner, 1, "CONTROL", (gpointer) 13);
   g_scanner_scope_add_symbol (scanner, 1, "META",    (gpointer) 14);
@@ -256,6 +260,8 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 2, "fillcolor", (gpointer) SYM_FILLCOLOR);
   g_scanner_scope_add_symbol (scanner, 2, "start",     (gpointer) SYM_START);
   g_scanner_scope_add_symbol (scanner, 2, "increment", (gpointer) SYM_INCREMENT);
+  g_scanner_scope_add_symbol (scanner, 2, "fontface",  (gpointer) SYM_FONTFACE);
+  g_scanner_scope_add_symbol (scanner, 2, "stamp",     (gpointer) SYM_STAMP);
 
   g_scanner_set_scope (scanner, 0);
   scanner->config->scope_0_fallback = 0;
@@ -306,6 +312,8 @@ gboolean parse_config (GromitData *data)
           fill_color = data->transparent;
           start = 1;
           increment = 1;
+          font_face = "sans-serif";
+          stamp = "";
 
           if (token == G_TOKEN_SYMBOL)
             {
@@ -339,6 +347,8 @@ gboolean parse_config (GromitData *data)
                   fill_color = context_template->fill_color;
                   start = context_template->start;
                   increment = context_template->increment;
+                  font_face = context_template->font_face;
+                  stamp = context_template->stamp;
                 }
               else
                 {
@@ -529,6 +539,56 @@ gboolean parse_config (GromitData *data)
                           if (isnan(v)) goto cleanup;
                           increment = v;
                         }
+                      else if ((intptr_t) scanner->value.v_symbol == SYM_FONTFACE)
+                        {
+                          token = g_scanner_get_next_token (scanner);
+                          if (token != G_TOKEN_EQUAL_SIGN)
+                            {
+                              g_printerr ("Missing \"=\"... aborting\n");
+                              goto cleanup;
+                            }
+                          token = g_scanner_get_next_token (scanner);
+                          if (token != G_TOKEN_STRING)
+                            {
+                              g_printerr ("Missing font face (string)... "
+                                          "aborting\n");
+                              goto cleanup;
+                            }
+                          if (scanner->value.v_string)
+                            {
+                              font_face = g_strdup (scanner->value.v_string);
+                            }
+                          else
+                            {
+                              g_printerr ("Unable to parse font face. "
+                                          "Keeping default.\n");
+                            }
+                        }
+                      else if ((intptr_t) scanner->value.v_symbol == SYM_STAMP)
+                        {
+                          token = g_scanner_get_next_token (scanner);
+                          if (token != G_TOKEN_EQUAL_SIGN)
+                            {
+                              g_printerr ("Missing \"=\"... aborting\n");
+                              goto cleanup;
+                            }
+                          token = g_scanner_get_next_token (scanner);
+                          if (token != G_TOKEN_STRING)
+                            {
+                              g_printerr ("Missing stamp (string)... "
+                                          "aborting\n");
+                              goto cleanup;
+                            }
+                          if (scanner->value.v_string)
+                            {
+                              stamp = g_strdup (scanner->value.v_string);
+                            }
+                          else
+                            {
+                              g_printerr ("Unable to parse stamp. "
+                                          "Keeping default.\n");
+                            }
+                        }
                       else
                         {
                           g_printerr ("Unknown tool type?????\n");
@@ -559,6 +619,7 @@ gboolean parse_config (GromitData *data)
                                        simplify, radius, maxangle, minlen, snapdist,
                                        xlength, ylength,
                                        start, increment,
+                                       font_face, stamp,
                                        minwidth, maxwidth);
           g_hash_table_insert (data->tool_config, key2string(keyName), context);
         }

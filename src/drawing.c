@@ -192,8 +192,50 @@ void draw_counter (GromitData *data,
       cairo_select_font_face (devdata->cur_context->paint_ctx, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
       cairo_set_font_size (devdata->cur_context->paint_ctx, fontsize);
       cairo_text_extents (devdata->cur_context->paint_ctx, countstr, &te);
-      cairo_move_to (devdata->cur_context->paint_ctx, x + 1 - te.width / 2 - te.x_bearing, y - te.height / 2 - te.y_bearing);
+      cairo_move_to (devdata->cur_context->paint_ctx, x + 2 - te.width / 2 - te.x_bearing, y - te.height / 2 - te.y_bearing);
       cairo_show_text (devdata->cur_context->paint_ctx, countstr);
+
+      data->modified = 1;
+
+      gdk_window_invalidate_rect(gtk_widget_get_window(data->win), &rect, 0);
+    }
+
+  data->painted = 1;
+}
+
+void draw_stamp (GromitData *data,
+    GdkDevice *dev,
+    guint x, guint y,
+    guint xlength, guint ylength,
+    guint radius, guint strokewidth,
+    GdkRGBA *fill_color,
+    gchar *font_face,
+    gchar *stamp)
+{
+  draw_frame(data, dev, x, y, xlength, ylength, radius, strokewidth, fill_color);
+
+  GdkRectangle rect;
+  GromitDeviceData *devdata = g_hash_table_lookup(data->devdatatable, dev);
+
+  rect.x = x - xlength / 2 - strokewidth;
+  rect.y = y - ylength / 2 - strokewidth;
+  rect.width = xlength + strokewidth * 2;
+  rect.height = ylength + strokewidth * 2;
+
+  if (devdata->cur_context->paint_ctx)
+    {
+      guint fontsize = ylength * 0.7;
+
+      if(data->debug)
+        g_printerr("DEBUG: draw counter with center %d, %d, width %d, height %d, corner radius %d, fill color %s, font_face %s and stamp %s\n", x, y, xlength, ylength, radius, gdk_rgba_to_string(fill_color), font_face, stamp);
+
+      cairo_text_extents_t te;
+      gdk_cairo_set_source_rgba(devdata->cur_context->paint_ctx, devdata->cur_context->paint_color);
+      cairo_select_font_face (devdata->cur_context->paint_ctx, font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_set_font_size (devdata->cur_context->paint_ctx, fontsize);
+      cairo_text_extents (devdata->cur_context->paint_ctx, stamp, &te);
+      cairo_move_to (devdata->cur_context->paint_ctx, x + 2 - te.width / 2 - te.x_bearing, y - te.height / 2 - te.y_bearing);
+      cairo_show_text (devdata->cur_context->paint_ctx, stamp);
 
       data->modified = 1;
 

@@ -143,9 +143,9 @@ void on_monitors_changed ( GdkScreen *screen,
 
 
   data->default_pen = paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
-                                         5, 10, 15, 25, 1, 0, 0, 1, 1, 0, G_MAXUINT);
+                                         5, 10, 15, 25, 1, 0, 0, 1, 1, "sans-serif", "", 0, G_MAXUINT);
   data->default_eraser = paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
-                                            5, 10, 15, 25, 1, 0, 0, 1, 1, 0, G_MAXUINT);
+                                            5, 10, 15, 25, 1, 0, 0, 1, 1, "sans-serif", "", 0, G_MAXUINT);
 
   if(!data->composited) // set shape
     {
@@ -322,6 +322,13 @@ gboolean on_buttonpress (GtkWidget *win,
       return TRUE;
     }
 
+  if (type == GROMIT_STAMP)
+    {
+      GromitPaintContext *ctx = devdata->cur_context;
+      draw_stamp(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->font_face, ctx->stamp);
+      return TRUE;
+    }
+
   if (ev->button <= 10)
     draw_line (data, ev->device, ev->x, ev->y, ev->x, ev->y);
 
@@ -365,7 +372,7 @@ gboolean on_motion (GtkWidget *win,
 
   GromitPaintType type = devdata->cur_context->type;
 
-  if(type == GROMIT_FRAME || type == GROMIT_COUNTER)
+  if(type == GROMIT_FRAME || type == GROMIT_COUNTER || type == GROMIT_STAMP)
     return FALSE;
 
   gdk_device_get_history (ev->device, ev->window,
@@ -500,7 +507,7 @@ gboolean on_buttonrelease (GtkWidget *win,
 
   GromitPaintType type = ctx->type;
 
-  if(type == GROMIT_FRAME || type == GROMIT_COUNTER)
+  if(type == GROMIT_FRAME || type == GROMIT_COUNTER || type == GROMIT_STAMP)
     return FALSE;
 
   if (type == GROMIT_SMOOTH || type == GROMIT_ORTHOGONAL)
@@ -687,7 +694,7 @@ void on_mainapp_selection_received (GtkWidget *widget,
 	    }
 	  GromitPaintContext* line_ctx =
             paint_context_new(data, GROMIT_PEN, fg_color, data->transparent, thickness, 0, GROMIT_ARROW_END,
-                              5, 10, 15, 25, 0, 0, 0, 1, 1, thickness, thickness);
+                              5, 10, 15, 25, 0, 0, 0, 1, 1, "sans-serif", "", thickness, thickness);
 
 	  GdkRectangle rect;
 	  rect.x = MIN (startX,endX) - thickness / 2;
