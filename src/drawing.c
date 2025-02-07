@@ -3,11 +3,6 @@
 #include "drawing.h"
 #include "main.h"
 
-guint min (guint x, guint y)
-{
-  return (x > y) ? y : x;
-}
-
 void draw_line (GromitData *data,
 		GdkDevice *dev,
 		gint x1, gint y1,
@@ -128,8 +123,8 @@ void draw_frame (GromitData *data,
   rect.width = xlength + strokewidth * 2;
   rect.height = ylength + strokewidth * 2;
 
-  if (radius > min(xlength, ylength) / 2)
-    radius = min(xlength, ylength) / 2;
+  if (radius > MIN (xlength, ylength) / 2)
+    radius = MIN (xlength, ylength) / 2;
 
   if(data->debug)
     g_printerr("DEBUG: draw frame with center %d, %d, width %d, height %d, corner radius %d and fill color %s\n", x, y, xlength, ylength, radius, gdk_rgba_to_string(fill_color));
@@ -221,11 +216,6 @@ void draw_stamp (GromitData *data,
   GdkRectangle rect;
   GromitDeviceData *devdata = g_hash_table_lookup(data->devdatatable, dev);
 
-  rect.x = x - xlength / 2 - strokewidth;
-  rect.y = y - ylength / 2 - strokewidth;
-  rect.width = xlength + strokewidth * 2;
-  rect.height = ylength + strokewidth * 2;
-
   if (devdata->cur_context->paint_ctx)
     {
       if(data->debug)
@@ -236,6 +226,14 @@ void draw_stamp (GromitData *data,
       cairo_select_font_face (devdata->cur_context->paint_ctx, font_face, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
       cairo_set_font_size (devdata->cur_context->paint_ctx, font_size);
       cairo_text_extents (devdata->cur_context->paint_ctx, stamp, &te);
+
+      xlength = MAX (xlength, te.width);
+      ylength = MAX (ylength, te.height);
+      rect.x = x - xlength / 2 - strokewidth;
+      rect.y = y - ylength / 2 - strokewidth;
+      rect.width = xlength + strokewidth * 2;
+      rect.height = ylength + strokewidth * 2;
+
       cairo_move_to (devdata->cur_context->paint_ctx, x + 1 - te.width / 2 - te.x_bearing, y - te.height / 2 - te.y_bearing);
       cairo_show_text (devdata->cur_context->paint_ctx, stamp);
 
