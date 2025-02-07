@@ -126,6 +126,7 @@ enum tool_arguments {
   SYM_FILLCOLOR,
   SYM_START,
   SYM_INCREMENT,
+  SYM_FONTCOLOR,
   SYM_FONTFACE,
   SYM_FONTSIZE,
   SYM_STAMP,
@@ -167,7 +168,7 @@ gboolean parse_config (GromitData *data)
   gboolean parsed;
 
   GromitPaintType type;
-  GdkRGBA *fg_color=NULL, *fill_color=NULL;
+  GdkRGBA *fg_color=NULL, *fill_color=NULL, *font_color=NULL;
   guint width, minwidth, maxwidth;
   gfloat arrowsize;
   guint minlen, maxangle, radius, simplify, snapdist;
@@ -262,6 +263,7 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 2, "fillcolor", (gpointer) SYM_FILLCOLOR);
   g_scanner_scope_add_symbol (scanner, 2, "start",     (gpointer) SYM_START);
   g_scanner_scope_add_symbol (scanner, 2, "increment", (gpointer) SYM_INCREMENT);
+  g_scanner_scope_add_symbol (scanner, 2, "fontcolor", (gpointer) SYM_FONTCOLOR);
   g_scanner_scope_add_symbol (scanner, 2, "fontface",  (gpointer) SYM_FONTFACE);
   g_scanner_scope_add_symbol (scanner, 2, "fontsize",  (gpointer) SYM_FONTSIZE);
   g_scanner_scope_add_symbol (scanner, 2, "stamp",     (gpointer) SYM_STAMP);
@@ -313,6 +315,7 @@ gboolean parse_config (GromitData *data)
           ylength = 0;
           fg_color = data->red;
           fill_color = data->transparent;
+          font_color = data->red;
           start = 1;
           increment = 1;
           font_face = "sans-serif";
@@ -351,6 +354,7 @@ gboolean parse_config (GromitData *data)
                   fill_color = context_template->fill_color;
                   start = context_template->start;
                   increment = context_template->increment;
+                  font_color = context_template->font_color;
                   font_face = context_template->font_face;
                   font_size = context_template->font_size;
                   stamp = context_template->stamp;
@@ -532,6 +536,34 @@ gboolean parse_config (GromitData *data)
                             }
                           color = NULL;
                         }
+                      else if ((intptr_t) scanner->value.v_symbol == SYM_FONTCOLOR)
+                        {
+                          token = g_scanner_get_next_token (scanner);
+                          if (token != G_TOKEN_EQUAL_SIGN)
+                            {
+                              g_printerr ("Missing \"=\"... aborting\n");
+                              goto cleanup;
+                            }
+                          token = g_scanner_get_next_token (scanner);
+                          if (token != G_TOKEN_STRING)
+                            {
+                              g_printerr ("Missing fontcolor (string)... "
+                                          "aborting\n");
+                              goto cleanup;
+                            }
+                          color = g_malloc (sizeof (GdkRGBA));
+                          if (gdk_rgba_parse (color, scanner->value.v_string))
+                            {
+                              font_color = color;
+                            }
+                          else
+                            {
+                              g_printerr ("Unable to parse fontcolor. "
+                                          "Keeping default.\n");
+                              g_free (color);
+                            }
+                          color = NULL;
+                        }
                       else if ((intptr_t) scanner->value.v_symbol == SYM_START)
                         {
                           gfloat v = parse_get_float(scanner, "Missing start (float)");
@@ -630,7 +662,7 @@ gboolean parse_config (GromitData *data)
                                        simplify, radius, maxangle, minlen, snapdist,
                                        xlength, ylength,
                                        start, increment,
-                                       font_face, font_size, stamp,
+                                       font_color, font_face, font_size, stamp,
                                        minwidth, maxwidth);
           g_hash_table_insert (data->tool_config, key2string(keyName), context);
         }

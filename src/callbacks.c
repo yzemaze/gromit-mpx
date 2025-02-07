@@ -143,9 +143,9 @@ void on_monitors_changed ( GdkScreen *screen,
 
 
   data->default_pen = paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
-                                         5, 10, 15, 25, 1, 0, 0, 1, 1, "sans-serif", 20, "", 0, G_MAXUINT);
+                                         5, 10, 15, 25, 1, 0, 0, 1, 1, data->red, "sans-serif", 20, "", 0, G_MAXUINT);
   data->default_eraser = paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
-                                            5, 10, 15, 25, 1, 0, 0, 1, 1, "sans-serif", 20, "", 0, G_MAXUINT);
+                                            5, 10, 15, 25, 1, 0, 0, 1, 1, data->red, "sans-serif", 20, "", 0, G_MAXUINT);
 
   if(!data->composited) // set shape
     {
@@ -317,7 +317,7 @@ gboolean on_buttonpress (GtkWidget *win,
         ctx->count = ctx->start;
         data->cleared = 0;
       }
-      draw_counter(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->font_face, ctx->font_size, ctx->count);
+      draw_counter(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->font_color, ctx->font_face, ctx->font_size, ctx->count);
       ctx->count += ctx->increment;
       return TRUE;
     }
@@ -325,7 +325,7 @@ gboolean on_buttonpress (GtkWidget *win,
   if (type == GROMIT_STAMP)
     {
       GromitPaintContext *ctx = devdata->cur_context;
-      draw_stamp(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->font_face, ctx->font_size, ctx->stamp);
+      draw_stamp(data, ev->device, ev->x, ev->y, ctx->xlength, ctx->ylength, ctx->radius, ctx->width, ctx->fill_color, ctx->font_color, ctx->font_face, ctx->font_size, ctx->stamp);
       return TRUE;
     }
 
@@ -694,7 +694,7 @@ void on_mainapp_selection_received (GtkWidget *widget,
 	    }
 	  GromitPaintContext* line_ctx =
             paint_context_new(data, GROMIT_PEN, fg_color, data->transparent, thickness, 0, GROMIT_ARROW_END,
-                              5, 10, 15, 25, 0, 0, 0, 1, 1, "sans-serif", 20, "", thickness, thickness);
+                              5, 10, 15, 25, 0, 0, 0, 1, 1, data->red, "sans-serif", 20, "", thickness, thickness);
 
 	  GdkRectangle rect;
 	  rect.x = MIN (startX,endX) - thickness / 2;
