@@ -30,9 +30,6 @@
 #include "input.h"
 #include "main.h"
 #include "build-config.h"
-
-#include "paint_cursor.xpm"
-#include "erase_cursor.xpm"
 #include "coordlist_ops.h"
 
 
@@ -73,6 +70,8 @@ GromitPaintContext *paint_context_new (GromitData *data,
   gdk_cairo_set_source_rgba(context->paint_ctx, paint_color);
   if(!data->composited)
     cairo_set_antialias(context->paint_ctx, CAIRO_ANTIALIAS_NONE);
+  else
+    cairo_set_antialias(context->paint_ctx, CAIRO_ANTIALIAS_SUBPIXEL);
   cairo_set_line_width(context->paint_ctx, width);
   cairo_set_line_cap(context->paint_ctx, CAIRO_LINE_CAP_ROUND);
   cairo_set_line_join(context->paint_ctx, CAIRO_LINE_JOIN_ROUND);
@@ -109,6 +108,8 @@ void paint_context_print (gchar *name,
       g_printerr ("Eraser,     "); break;
     case GROMIT_RECOLOR:
       g_printerr ("Recolor,    "); break;
+    case GROMIT_CIRCLE:
+      g_printerr ("Circle,     "); break;
     default:
       g_printerr ("UNKNOWN,    "); break;
   }
@@ -142,6 +143,11 @@ void paint_context_print (gchar *name,
       g_printerr(" radius: %u, minlen: %u, maxangle: %u ",
                  context->radius, context->minlen, context->maxangle);
     }
+  if (context->type == GROMIT_CIRCLE)
+    {
+      if (context->fill_color)
+        g_printerr(" fillcolor: %s, ", gdk_rgba_to_string(context->fill_color));
+    }
   g_printerr ("color: %s\n", gdk_rgba_to_string(context->paint_color));
 }
 
@@ -149,6 +155,8 @@ void paint_context_print (gchar *name,
 void paint_context_free (GromitPaintContext *context)
 {
   cairo_destroy(context->paint_ctx);
+  if (context->fill_color)
+    g_free(context->fill_color);
   g_free (context);
 }
 
@@ -653,18 +661,37 @@ void setup_main_app (GromitData *data, int argc, char ** argv)
   /*
      CURSORS
   */
-  GdkPixbuf* paint_cursor_pixbuf = gdk_pixbuf_new_from_xpm_data(paint_cursor_xpm);
+  GError *error = NULL;
+  GdkPixbuf *paint_cursor_pixbuf = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
+                                                            "net.christianbeier.Gromit-MPX.paint_cursor",
+                                                            31,
+                                                            0,
+                                                            &error);
+  if (error) {
+      g_printerr("Could not load icon '%s': %s\n", "net.christianbeier.Gromit-MPX.paint_cursor", error->message);
+      g_error_free(error);
+      error = NULL;
+  }
   data->paint_cursor = gdk_cursor_new_from_pixbuf(data->display,
 						  paint_cursor_pixbuf,
-						  paint_cursor_x_hot,
-						  paint_cursor_y_hot);
+						  14,
+						  14);
   g_object_unref (paint_cursor_pixbuf);
 
-  GdkPixbuf* erase_cursor_pixbuf = gdk_pixbuf_new_from_xpm_data(erase_cursor_xpm);
+  GdkPixbuf *erase_cursor_pixbuf = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
+                                                            "net.christianbeier.Gromit-MPX.erase_cursor",
+                                                            31,
+                                                            0,
+                                                            &error);
+  if (error) {
+      g_printerr("Could not load icon '%s': %s\n", "net.christianbeier.Gromit-MPX.erase_cursor", error->message);
+      g_error_free(error);
+      error = NULL;
+  }
   data->erase_cursor = gdk_cursor_new_from_pixbuf(data->display,
 						  erase_cursor_pixbuf,
-						  erase_cursor_x_hot,
-						  erase_cursor_y_hot);
+						  14,
+						  14);
   g_object_unref (erase_cursor_pixbuf);
 
 
@@ -1201,8 +1228,8 @@ int main (int argc, char **argv)
   data->xinerama = gdk_screen_get_n_monitors (data->screen) > 1;
   data->composited = gdk_screen_is_composited (data->screen);
   data->root = gdk_screen_get_root_window (data->screen);
-  data->width = gdk_screen_get_width (data->screen);
-  data->height = gdk_screen_get_height (data->screen);
+  data->width = gdk_window_get_width (data->root);
+  data->height = gdk_window_get_height (data->root);
   data->opacity = DEFAULT_OPACITY;
 
   /*
