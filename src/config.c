@@ -130,6 +130,7 @@ enum tool_arguments {
   SYM_FONTFACE,
   SYM_FONTSIZE,
   SYM_STAMP,
+  SYM_FILLCOLOR,
 };
 
 /*
@@ -169,6 +170,7 @@ gboolean parse_config (GromitData *data)
 
   GromitPaintType type;
   GdkRGBA *fg_color=NULL, *fill_color=NULL, *font_color=NULL;
+  GdkRGBA *fill_color=NULL;
   guint width, minwidth, maxwidth;
   gfloat arrowsize;
   guint minlen, maxangle, radius, simplify, snapdist;
@@ -229,6 +231,7 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 0, "ORTHOGONAL",(gpointer) GROMIT_ORTHOGONAL);
   g_scanner_scope_add_symbol (scanner, 0, "ERASER",    (gpointer) GROMIT_ERASER);
   g_scanner_scope_add_symbol (scanner, 0, "RECOLOR",   (gpointer) GROMIT_RECOLOR);
+  g_scanner_scope_add_symbol (scanner, 0, "CIRCLE",    (gpointer) GROMIT_CIRCLE);
   g_scanner_scope_add_symbol (scanner, 0, "HOTKEY",               HOTKEY_SYMBOL_VALUE);
   g_scanner_scope_add_symbol (scanner, 0, "UNDOKEY",              UNDOKEY_SYMBOL_VALUE);
 
@@ -267,6 +270,7 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 2, "fontface",  (gpointer) SYM_FONTFACE);
   g_scanner_scope_add_symbol (scanner, 2, "fontsize",  (gpointer) SYM_FONTSIZE);
   g_scanner_scope_add_symbol (scanner, 2, "stamp",     (gpointer) SYM_STAMP);
+  g_scanner_scope_add_symbol (scanner, 2, "fillcolor", (gpointer) SYM_FILLCOLOR);
 
   g_scanner_set_scope (scanner, 0);
   scanner->config->scope_0_fallback = 0;
@@ -664,6 +668,7 @@ gboolean parse_config (GromitData *data)
                                        start, increment,
                                        font_color, font_face, font_size, stamp,
                                        minwidth, maxwidth);
+          context->fill_color = fill_color;
           g_hash_table_insert (data->tool_config, key2string(keyName), context);
         }
       else if (token == G_TOKEN_SYMBOL &&

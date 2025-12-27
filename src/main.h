@@ -73,7 +73,8 @@ typedef enum
   GROMIT_COUNTER,
   GROMIT_STAMP,
   GROMIT_ERASER,
-  GROMIT_RECOLOR
+  GROMIT_RECOLOR,
+  GROMIT_CIRCLE
 } GromitPaintType;
 
 typedef enum
