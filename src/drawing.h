@@ -22,5 +22,7 @@ void draw_frame (GromitData *data, GdkDevice *dev, guint x, guint y, guint xleng
 void draw_counter (GromitData *data, GdkDevice *dev, guint x, guint y, guint xlength, guint ylength, guint radius, guint strokewidth, GdkRGBA *fill_color, GdkRGBA *font_color, gchar *font_face, guint font_size, gint count);
 void draw_stamp (GromitData *data, GdkDevice *dev, guint x, guint y, guint xlength, guint ylength, guint radius, guint strokewidth, GdkRGBA *fill_color, GdkRGBA *font_color, gchar *font_face, guint font_size, gchar *stamp);
 void draw_circle (GromitData *data, GdkDevice *dev, gint x, gint y, gfloat radius);
+void draw_length_label (GromitData *data, GdkDevice *dev, gint x1, gint y1, gint x2, gint y2);
+void draw_string_label (GromitData *data, GdkDevice *dev, gint x, gint y, char *string);
 
 #endif

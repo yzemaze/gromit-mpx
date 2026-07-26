@@ -131,6 +131,8 @@ enum tool_arguments {
   SYM_FONTSIZE,
   SYM_STAMP,
   SYM_FILLCOLOR,
+  SYM_TEXTSIZE,
+  SYM_SHOWLENGTH,
 };
 
 /*
@@ -271,6 +273,8 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 2, "fontsize",  (gpointer) SYM_FONTSIZE);
   g_scanner_scope_add_symbol (scanner, 2, "stamp",     (gpointer) SYM_STAMP);
   g_scanner_scope_add_symbol (scanner, 2, "fillcolor", (gpointer) SYM_FILLCOLOR);
+  g_scanner_scope_add_symbol (scanner, 2, "textsize",  (gpointer) SYM_TEXTSIZE);
+  g_scanner_scope_add_symbol (scanner, 2, "showlength",(gpointer) SYM_SHOWLENGTH);
 
   g_scanner_set_scope (scanner, 0);
   scanner->config->scope_0_fallback = 0;
@@ -325,6 +329,8 @@ gboolean parse_config (GromitData *data)
           font_face = "sans-serif";
           font_size = 20;
           stamp = "";
+          gfloat textsize = 14.0;
+          gboolean showlength = 0;
 
           if (token == G_TOKEN_SYMBOL)
             {
@@ -355,6 +361,8 @@ gboolean parse_config (GromitData *data)
                   xlength = context_template->xlength;
                   ylength = context_template->ylength;
                   fg_color = context_template->paint_color;
+                  textsize = context_template->textsize;
+                  showlength = context_template->showlength;
                   fill_color = context_template->fill_color;
                   start = context_template->start;
                   increment = context_template->increment;
@@ -636,7 +644,19 @@ gboolean parse_config (GromitData *data)
                                           "Keeping default.\n");
                             }
                         }
-                      else
+                      else if ((intptr_t) scanner->value.v_string == SYM_TEXTSIZE)
+                        {
+                          gfloat v = parse_get_float(scanner, "Missing textsize value (float)");
+                          if (isnan(v)) goto cleanup;
+
+                          if (v < 1) v = 1;
+                          textsize = v;
+                        }
+                      else if ((intptr_t) scanner->value.v_symbol == SYM_SHOWLENGTH)
+                        {
+                          showlength = 1;
+                        }
+                              else
                         {
                           g_printerr ("Unknown tool type?????\n");
                         }
@@ -669,6 +689,8 @@ gboolean parse_config (GromitData *data)
                                        font_color, font_face, font_size, stamp,
                                        minwidth, maxwidth);
           context->fill_color = fill_color;
+          context->textsize = textsize;
+          context->showlength = showlength;
           g_hash_table_insert (data->tool_config, key2string(keyName), context);
         }
       else if (token == G_TOKEN_SYMBOL &&

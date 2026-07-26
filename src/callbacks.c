@@ -440,7 +440,9 @@ gboolean on_motion (GtkWidget *win,
           if (type == GROMIT_LINE)
             {
               GromitArrowType atype = devdata->cur_context->arrow_type;
-	      draw_line (data, ev->device, devdata->lastx, devdata->lasty, ev->x, ev->y);
+	          draw_line (data, ev->device, devdata->lastx, devdata->lasty, ev->x, ev->y);
+              if (devdata->cur_context->showlength)
+                  draw_length_label (data, ev->device, devdata->lastx, devdata->lasty, ev->x, ev->y);
               if (devdata->cur_context->arrowsize > 0)
                 {
                   GromitArrowType atype = devdata->cur_context->arrow_type;
@@ -909,6 +911,7 @@ void on_about(GtkMenuItem *menuitem,
                                 "Andrew Marshall <andrew@johnandrewmarshall.com>",
                                 "gavine99 <63904295+gavine99@users.noreply.github.com>",
                                 "Marcin Orlowski <mail@marcinOrlowski.com>",
+                                "markovka <59536783+mark00vka@users.noreply.github.com>",
 				NULL };
     gtk_show_about_dialog (NULL,
 			   "program-name", "Gromit-MPX",
@@ -918,7 +921,7 @@ void on_about(GtkMenuItem *menuitem,
 			   "version", PACKAGE_VERSION,
 			   "website", PACKAGE_URL,
 			   "authors", authors,
-			   "copyright", "2009-2025 Christian Beier, Copyright 2000 Simon Budig",
+			   "copyright", "2009-2026 Christian Beier, Copyright 2000 Simon Budig",
 			   "license-type", GTK_LICENSE_GPL_2_0,
 			   NULL);
 }
