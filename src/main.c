@@ -64,6 +64,8 @@ GromitPaintContext *paint_context_new (GromitData *data,
   context->simplify = simplify;
   context->minlen = minlen;
   context->snapdist = snapdist;
+  context->textsize = 14.0;
+  context->showlength = 0;
 
   context->paint_ctx = cairo_create (data->backbuffer);
 
@@ -1099,6 +1101,7 @@ int main_client (int argc, char **argv, GromitData *data)
    gint      i;
    gchar    *arg;
    gboolean  wrong_arg = FALSE;
+   gboolean  clientdata_allocated = FALSE;
 
    for (i=1; i < argc ; i++)
      {
@@ -1144,6 +1147,7 @@ int main_client (int argc, char **argv, GromitData *data)
                else
                     {
                       data->clientdata = g_strjoin(" ", argv[i+1], argv[i+2], argv[i+3], argv[i+4], argv[i+5], argv[i+6], NULL);
+                      clientdata_allocated = TRUE;
                     }
 
                action = GA_LINE;
@@ -1200,10 +1204,15 @@ int main_client (int argc, char **argv, GromitData *data)
        else if(wrong_arg)
          {
            g_printerr ("Please see the Gromit-MPX manpage for the correct usage\n");
+           if (clientdata_allocated)
+             g_free (data->clientdata);
            return 1;
          }
      }
 
+   /* Clean up allocated memory */
+   if (clientdata_allocated)
+     g_free (data->clientdata);
 
    return 0;
 }
