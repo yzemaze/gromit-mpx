@@ -288,7 +288,16 @@ void clear_screen (GromitData *data)
     }
 
   data->painted = 0;
-  data->cleared = 1;
+
+  GHashTableIter it;
+  gpointer value;
+  g_hash_table_iter_init (&it, data->tool_config);
+  while (g_hash_table_iter_next (&it, NULL, &value))
+    {
+      GromitPaintContext *ctx = value;
+      if (ctx->type == GROMIT_COUNTER)
+        ctx->count = ctx->start;
+    }
 
   if(data->debug)
     g_printerr ("DEBUG: Cleared screen.\n");

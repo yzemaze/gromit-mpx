@@ -186,7 +186,6 @@ typedef struct
   guint        height;
   guint        client;
   guint        painted;
-  guint        cleared;
   gboolean     hidden;
   gboolean     debug;
 

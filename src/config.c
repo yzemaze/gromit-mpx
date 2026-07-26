@@ -130,7 +130,6 @@ enum tool_arguments {
   SYM_FONTFACE,
   SYM_FONTSIZE,
   SYM_STAMP,
-  SYM_FILLCOLOR,
   SYM_TEXTSIZE,
   SYM_SHOWLENGTH,
 };
@@ -172,7 +171,6 @@ gboolean parse_config (GromitData *data)
 
   GromitPaintType type;
   GdkRGBA *fg_color=NULL, *fill_color=NULL, *font_color=NULL;
-  GdkRGBA *fill_color=NULL;
   guint width, minwidth, maxwidth;
   gfloat arrowsize;
   guint minlen, maxangle, radius, simplify, snapdist;
