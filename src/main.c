@@ -40,12 +40,12 @@ GromitPaintContext *paint_context_new (GromitData *data,
 				       GdkRGBA *fill_color,
 				       guint width,
 				       gfloat arrowsize,
-               GromitArrowType arrowtype,
-							 guint simplify,
-							 guint radius,
-							 guint maxangle,
-							 guint minlen,
-							 guint snapdist,
+                                       GromitArrowType arrowtype,
+				       guint simplify,
+                                       guint radius,
+                                       guint maxangle,
+                                       guint minlen,
+                                       guint snapdist,
 				       guint xlength,
 				       guint ylength,
 				       gint start,
@@ -176,9 +176,9 @@ void paint_context_print (gchar *name,
       g_printerr("fillcolor: %s, ", gdk_rgba_to_string(context->fill_color));
     }
   if (context->type == GROMIT_COUNTER || context->type == GROMIT_STAMP)
-  	{
+    {
       g_printerr("font_color: %s, font_face: %s, font_size: %u, ", gdk_rgba_to_string(context->font_color), context->font_face, context->font_size);
-  	}
+    }
   if (context->type == GROMIT_COUNTER)
     {
       g_printerr("start: %d, increment: %d, ", context->start, context->increment);

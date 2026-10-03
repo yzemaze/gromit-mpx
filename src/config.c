@@ -350,8 +350,8 @@ gboolean parse_config (GromitData *data)
           else if (token == G_TOKEN_STRING)
             {
               parsed = parse_name (scanner, &keyCopy);
-	            if(!parsed)
-		            goto cleanup;
+              if(!parsed)
+                goto cleanup;
               token = g_scanner_cur_token(scanner);
               gchar *copy_key = key2string(keyCopy);
               g_free (keyCopy.name);
