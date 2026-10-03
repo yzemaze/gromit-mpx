@@ -131,11 +131,6 @@ void on_monitors_changed ( GdkScreen *screen,
   /*
      these depend on the shape surface
   */
-  GHashTableIter it;
-  gpointer value;
-  g_hash_table_iter_init (&it, data->tool_config);
-  while (g_hash_table_iter_next (&it, NULL, &value)) 
-    paint_context_free(value);
   g_hash_table_remove_all(data->tool_config);
 
 
@@ -728,6 +723,7 @@ void on_mainapp_selection_received (GtkWidget *widget,
 	  data->painted = 1;
 
 	  paint_context_free (line_ctx);
+	  g_strfreev (line_args);
 	}
     }
  

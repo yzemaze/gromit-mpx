@@ -78,9 +78,9 @@ GromitPaintContext *paint_context_new (GromitData *data,
   context->xlength = xlength;
   context->ylength = ylength;
   context->start = start;
-  context->font_face = font_face;
+  context->font_face = g_strdup (font_face);
   context->font_size = font_size;
-  context->stamp = stamp;
+  context->stamp = g_strdup (stamp);
   context->increment = increment;
   context->count = start;
   context->textsize = 14.0;
@@ -203,6 +203,8 @@ void paint_context_free (GromitPaintContext *context)
   if (context->fill_color)
     gdk_rgba_free (context->fill_color);
   gdk_rgba_free (context->font_color);
+  g_free (context->font_face);
+  g_free (context->stamp);
   g_free (context);
 }
 
@@ -345,7 +347,7 @@ void select_tool (GromitData *data,
 		  GdkDevice *slave_device,
 		  GromitState state)
 {
-  guint buttons = 0, modifier = 0, slave_len = 0, len = 0, default_len = 0;
+  guint buttons = 0, modifier = 0;
   guint req_buttons = 0, req_modifier = 0;
   guint i, j, success = 0;
   GromitPaintContext *context = NULL;
@@ -356,14 +358,10 @@ void select_tool (GromitData *data,
 
   if (device)
     {
-      slave_len = strlen (gdk_device_get_name(slave_device));
-      keySlave.name = g_strndup (gdk_device_get_name(slave_device), slave_len);
-      len = strlen (gdk_device_get_name(device));
-      keyName.name = g_strndup (gdk_device_get_name(device), len);
-      default_len = strlen(DEFAULT_DEVICE_NAME);
-      keyDefault.name = g_strndup (DEFAULT_DEVICE_NAME, default_len);
-      
-      
+      keySlave.name = (gchar *) gdk_device_get_name(slave_device);
+      keyName.name = (gchar *) gdk_device_get_name(device);
+      keyDefault.name = DEFAULT_DEVICE_NAME;
+
       /* Extract Button/Modifiers from state (see GdkModifierType) */
       req_buttons = state.buttons;
       req_modifier = state.modifiers;
@@ -402,33 +400,40 @@ void select_tool (GromitData *data,
               keyDefault.state.buttons = buttons;
               keyDefault.state.modifiers = modifier;
 
-	            if(data->debug)
-                g_printerr("DEBUG: select_tool looking up context for '%s' attached to '%s'\n", key2string(keySlave), key2string(keyName));
+              gchar *slave_key = key2string(keySlave);
+              gchar *name_key = key2string(keyName);
+              gchar *default_key = key2string(keyDefault);
 
-              context = g_hash_table_lookup (data->tool_config, key2string(keySlave));
+	            if(data->debug)
+                g_printerr("DEBUG: select_tool looking up context for '%s' attached to '%s'\n", slave_key, name_key);
+
+              context = g_hash_table_lookup (data->tool_config, slave_key);
               if(context) {
                   if(data->debug)
-                    g_printerr("DEBUG: select_tool set context for '%s'\n", key2string(keySlave));
+                    g_printerr("DEBUG: select_tool set context for '%s'\n", slave_key);
                   devdata->cur_context = context;
                   success = 1;
               }
               else /* try master name */
-              if ((context = g_hash_table_lookup (data->tool_config, key2string(keyName))))
+              if ((context = g_hash_table_lookup (data->tool_config, name_key)))
                 {
                   if(data->debug)
-                    g_printerr("DEBUG: select_tool set context for '%s'\n", key2string(keyName));
+                    g_printerr("DEBUG: select_tool set context for '%s'\n", name_key);
                   devdata->cur_context = context;
                   success = 1;
                 }
               else /* try default_name */
-                if((context = g_hash_table_lookup (data->tool_config, key2string(keyDefault))))
+                if((context = g_hash_table_lookup (data->tool_config, default_key)))
                   {
                     if(data->debug)
-                      g_printerr("DEBUG: select_tool set default context '%s' for '%s'\n", key2string(keyDefault), key2string(keyName));
+                      g_printerr("DEBUG: select_tool set default context '%s' for '%s'\n", default_key, name_key);
                     devdata->cur_context = context;
                     success = 1;
                   }
 
+              g_free (slave_key);
+              g_free (name_key);
+              g_free (default_key);
             }
           while (j<=3 && req_modifier >= (1u << j));
         }
@@ -442,7 +447,7 @@ void select_tool (GromitData *data,
             devdata->cur_context = data->default_pen;
 
 	  if(data->debug)
-	      g_printerr("DEBUG: select_tool set fallback context for '%s'\n", key2string(keyName));
+	      g_printerr("DEBUG: select_tool set fallback context for '%s'\n", keyName.name);
         }
 
     }
@@ -832,7 +837,8 @@ void setup_main_app (GromitData *data, int argc, char ** argv)
   /*
    * Parse Config file
    */
-  data->tool_config = g_hash_table_new (g_str_hash, g_str_equal);
+  data->tool_config = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                             g_free, (GDestroyNotify) paint_context_free);
   parse_config (data);
   g_hash_table_foreach (data->tool_config, parse_print_help, NULL);
 

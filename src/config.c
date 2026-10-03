@@ -191,6 +191,8 @@ gboolean parse_config (GromitData *data)
   gint start, increment;
   guint font_size;
   gchar *font_face, *stamp;
+  gchar *font_face_buf = NULL, *stamp_buf = NULL;
+  GromitLookupKey keyName = {}, keyCopy = {};
   GromitArrowType arrowtype;
 
   /* try user config location */
@@ -300,8 +302,6 @@ gboolean parse_config (GromitData *data)
           /*
            * New tool definition
            */
-          GromitLookupKey keyName = {};
-
           parsed = parse_name (scanner, &keyName);
 
 	  if(!parsed)
@@ -350,12 +350,14 @@ gboolean parse_config (GromitData *data)
             }
           else if (token == G_TOKEN_STRING)
             {
-              GromitLookupKey keyCopy = {};
               parsed = parse_name (scanner, &keyCopy);
 	            if(!parsed)
 		            goto cleanup;
               token = g_scanner_cur_token(scanner);
-              context_template = g_hash_table_lookup (data->tool_config, key2string(keyCopy));
+              gchar *copy_key = key2string(keyCopy);
+              g_free (keyCopy.name);
+              keyCopy.name = NULL;
+              context_template = g_hash_table_lookup (data->tool_config, copy_key);
               if (context_template)
                 {
                   type = context_template->type;
@@ -385,8 +387,9 @@ gboolean parse_config (GromitData *data)
               else
                 {
                   g_printerr ("WARNING: Unable to copy \"%s\": "
-                              "not yet defined!\n", key2string(keyCopy));
+                              "not yet defined!\n", copy_key);
                 }
+              g_free (copy_key);
             }
           else
             {
@@ -612,7 +615,8 @@ gboolean parse_config (GromitData *data)
                             }
                           if (scanner->value.v_string)
                             {
-                              font_face = g_strdup (scanner->value.v_string);
+                              g_free (font_face_buf);
+                              font_face = font_face_buf = g_strdup (scanner->value.v_string);
                             }
                           else
                             {
@@ -637,7 +641,8 @@ gboolean parse_config (GromitData *data)
                             }
                           if (scanner->value.v_string)
                             {
-                              stamp = g_strdup (scanner->value.v_string);
+                              g_free (stamp_buf);
+                              stamp = stamp_buf = g_strdup (scanner->value.v_string);
                             }
                           else
                             {
@@ -692,6 +697,8 @@ gboolean parse_config (GromitData *data)
           context->textsize = textsize;
           context->showlength = showlength;
           g_hash_table_insert (data->tool_config, key2string(keyName), context);
+          g_free (keyName.name);
+          keyName.name = NULL;
         }
       else if (token == G_TOKEN_SYMBOL &&
                (scanner->value.v_symbol == HOTKEY_SYMBOL_VALUE ||
@@ -752,11 +759,6 @@ gboolean parse_config (GromitData *data)
 
   if (!status) {
       /* purge incomplete tool config */
-      GHashTableIter it;
-      gpointer value;
-      g_hash_table_iter_init (&it, data->tool_config);
-      while (g_hash_table_iter_next (&it, NULL, &value))
-	  paint_context_free(value);
       g_hash_table_remove_all(data->tool_config);
 
       /* alert user */
@@ -770,6 +772,10 @@ gboolean parse_config (GromitData *data)
       gtk_widget_destroy (dialog);
   }
 
+  g_free (keyName.name);
+  g_free (keyCopy.name);
+  g_free (font_face_buf);
+  g_free (stamp_buf);
   g_scanner_destroy (scanner);
   close (file);
   g_free (filename);
