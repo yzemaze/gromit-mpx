@@ -214,6 +214,35 @@ static void add_hotkeys_to_compositor(GromitData *data) {
     }
 }
 
+/*
+   Master pointers in reverse server order like the deprecated device manager
+   listed them, so the device ids for --toggle stay the same.
+ */
+static GList *list_master_pointers (GromitData *data)
+{
+    GList *pointers = NULL;
+    GList *seats = gdk_display_list_seats(data->display);
+    int n_masters = 0;
+    XIDeviceInfo *masters = XIQueryDevice(GDK_DISPLAY_XDISPLAY(data->display),
+					  XIAllMasterDevices,
+					  &n_masters);
+
+    for (int i = 0; i < n_masters; i++) {
+	if (masters[i].use != XIMasterPointer)
+	    continue;
+	for (GList *s = seats; s; s = s->next) {
+	    GdkDevice *pointer = gdk_seat_get_pointer(s->data);
+	    if (gdk_x11_device_get_id(pointer) == masters[i].deviceid)
+		pointers = g_list_prepend(pointers, pointer);
+	}
+    }
+
+    XIFreeDeviceInfo(masters);
+    g_list_free(seats);
+
+    return pointers;
+}
+
 void setup_input_devices (GromitData *data)
 {
   /* ungrab all */
@@ -229,11 +258,10 @@ void setup_input_devices (GromitData *data)
 
 
   /* get devices */
-  GdkDeviceManager *device_manager = gdk_display_get_device_manager(data->display);
   GList *devices, *d;
   int i = 0;
 
-  devices = gdk_device_manager_list_devices(device_manager, GDK_DEVICE_TYPE_MASTER);
+  devices = list_master_pointers(data);
   for(d = devices; d; d = d->next)
     {
       GdkDevice *device = (GdkDevice *) d->data;
@@ -360,6 +388,7 @@ void setup_input_devices (GromitData *data)
 		      i++, gdk_device_get_name(device), gdk_device_get_source(device));
         }
     }
+  g_list_free(devices);
 
   g_printerr ("Now %d enabled devices.\n", g_hash_table_size(data->devdatatable));
 }

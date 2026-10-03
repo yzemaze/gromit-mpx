@@ -730,34 +730,26 @@ void on_mainapp_selection_received (GtkWidget *widget,
 }
 
 
-void on_device_removed (GdkDeviceManager *device_manager,
-			GdkDevice        *device,
-			gpointer          user_data)
+void on_seat_removed (GdkDisplay *display,
+		      GdkSeat    *seat,
+		      gpointer    user_data)
 {
   GromitData *data = (GromitData *) user_data;
-    
-  if(gdk_device_get_device_type(device) != GDK_DEVICE_TYPE_MASTER
-     || gdk_device_get_n_axes(device) < 2)
-    return;
-  
+
   if(data->debug)
-    g_printerr("DEBUG: device '%s' removed\n", gdk_device_get_name(device));
+    g_printerr("DEBUG: device '%s' removed\n", gdk_device_get_name(gdk_seat_get_pointer(seat)));
 
   setup_input_devices(data);
 }
 
-void on_device_added (GdkDeviceManager *device_manager,
-		      GdkDevice        *device,
-		      gpointer          user_data)
+void on_seat_added (GdkDisplay *display,
+		    GdkSeat    *seat,
+		    gpointer    user_data)
 {
   GromitData *data = (GromitData *) user_data;
 
-  if(gdk_device_get_device_type(device) != GDK_DEVICE_TYPE_MASTER
-     || gdk_device_get_n_axes(device) < 2)
-    return;
-
   if(data->debug)
-    g_printerr("DEBUG: device '%s' added\n", gdk_device_get_name(device));
+    g_printerr("DEBUG: device '%s' added\n", gdk_device_get_name(gdk_seat_get_pointer(seat)));
 
   setup_input_devices(data);
 }

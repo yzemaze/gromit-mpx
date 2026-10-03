@@ -822,10 +822,10 @@ void setup_main_app (GromitData *data, int argc, char ** argv)
 		    G_CALLBACK (on_monitors_changed), data);
   g_signal_connect (data->screen,"composited-changed",
 		    G_CALLBACK (on_composited_changed), data);
-  g_signal_connect (gdk_display_get_device_manager (data->display), "device-added",
-                    G_CALLBACK (on_device_added), data);
-  g_signal_connect (gdk_display_get_device_manager (data->display), "device-removed",
-                    G_CALLBACK (on_device_removed), data);
+  g_signal_connect (data->display, "seat-added",
+                    G_CALLBACK (on_seat_added), data);
+  g_signal_connect (data->display, "seat-removed",
+                    G_CALLBACK (on_seat_removed), data);
   g_signal_connect (data->win, "motion_notify_event",
 		    G_CALLBACK (on_motion), data);
   g_signal_connect (data->win, "button_press_event",

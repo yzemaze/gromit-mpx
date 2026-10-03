@@ -78,13 +78,13 @@ void on_mainapp_selection_received (GtkWidget *widget,
 				    gpointer user_data);
 
 
-void on_device_removed (GdkDeviceManager *device_manager,
-			GdkDevice        *device,
-			gpointer          user_data);
+void on_seat_removed (GdkDisplay *display,
+		      GdkSeat    *seat,
+		      gpointer    user_data);
 
-void on_device_added (GdkDeviceManager *device_manager,
-		      GdkDevice        *device,
-		      gpointer          user_data);
+void on_seat_added (GdkDisplay *display,
+		    GdkSeat    *seat,
+		    gpointer    user_data);
 
 void on_signal(int signum);
 
