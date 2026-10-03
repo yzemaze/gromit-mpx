@@ -221,7 +221,7 @@ void draw_stamp (GromitData *data,
   if (devdata->cur_context->paint_ctx)
     {
       if(data->debug)
-        g_printerr("DEBUG: draw counter with center %d, %d, width %d, height %d, corner radius %d, fill color %s, font color %s, font_face %s, font_size %u and stamp %s\n", x, y, xlength, ylength, radius, gdk_rgba_to_string(fill_color), gdk_rgba_to_string(font_color), font_face, font_size, stamp);
+        g_printerr("DEBUG: draw stamp with center %d, %d, width %d, height %d, corner radius %d, fill color %s, font color %s, font_face %s, font_size %u and stamp %s\n", x, y, xlength, ylength, radius, gdk_rgba_to_string(fill_color), gdk_rgba_to_string(font_color), font_face, font_size, stamp);
 
       cairo_text_extents_t te;
       gdk_cairo_set_source_rgba(devdata->cur_context->paint_ctx, devdata->cur_context->font_color);
