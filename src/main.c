@@ -485,13 +485,12 @@ void select_tool (GromitData *data,
   //FIXME!  Should be:
   //gdk_window_set_cursor(gtk_widget_get_window(data->win), cursor);
   // doesn't work during a grab?
-  gdk_device_grab(device,
-  		  gtk_widget_get_window(data->win),
-  		  GDK_OWNERSHIP_NONE,
-  		  FALSE,
-  		  GROMIT_MOUSE_EVENTS,
-  		  cursor,
-  		  GDK_CURRENT_TIME);
+  gdk_seat_grab(gdk_device_get_seat(device),
+		gtk_widget_get_window(data->win),
+		GROMIT_SEAT_CAPABILITIES,
+		FALSE,
+		cursor,
+		NULL, NULL, NULL);
 
   devdata->state = state;
   devdata->lastslave = slave_device;

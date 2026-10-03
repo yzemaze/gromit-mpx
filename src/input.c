@@ -493,13 +493,12 @@ void acquire_grab (GromitData *data,
 	    cursor = data->paint_cursor; 
 
 	
-	  if(gdk_device_grab(devdata->device,
-			     gtk_widget_get_window(data->win),
-			     GDK_OWNERSHIP_NONE,
-			     FALSE,
-			     GROMIT_MOUSE_EVENTS,
-			     cursor,
-			     GDK_CURRENT_TIME) != GDK_GRAB_SUCCESS)
+	  if(gdk_seat_grab(gdk_device_get_seat(devdata->device),
+			   gtk_widget_get_window(data->win),
+			   GROMIT_SEAT_CAPABILITIES,
+			   FALSE,
+			   cursor,
+			   NULL, NULL, NULL) != GDK_GRAB_SUCCESS)
 	    {
 	      /* this probably means the device table is outdated, 
 		 e.g. this device doesn't exist anymore */
@@ -532,13 +531,12 @@ void acquire_grab (GromitData *data,
       else
 	cursor = data->paint_cursor; 
       
-      if(gdk_device_grab(devdata->device,
-			 gtk_widget_get_window(data->win),
-			 GDK_OWNERSHIP_NONE,
-			 FALSE,
-			 GROMIT_MOUSE_EVENTS,
-			 cursor,
-			 GDK_CURRENT_TIME) != GDK_GRAB_SUCCESS)
+      if(gdk_seat_grab(gdk_device_get_seat(devdata->device),
+		       gtk_widget_get_window(data->win),
+		       GROMIT_SEAT_CAPABILITIES,
+		       FALSE,
+		       cursor,
+		       NULL, NULL, NULL) != GDK_GRAB_SUCCESS)
 	{
 	  /* this probably means the device table is outdated,
 	     e.g. this device doesn't exist anymore */
