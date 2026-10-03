@@ -844,6 +844,7 @@ void on_opacity_bigger(GtkMenuItem *menuitem,
   if(data->opacity>1.0)
     data->opacity = 1.0;
   gtk_widget_set_opacity(data->win, data->opacity);
+  write_keyfile(data);
 }
 
 void on_opacity_lesser(GtkMenuItem *menuitem,
@@ -854,6 +855,7 @@ void on_opacity_lesser(GtkMenuItem *menuitem,
   if(data->opacity<0.0)
     data->opacity = 0.0;
   gtk_widget_set_opacity(data->win, data->opacity);
+  write_keyfile(data);
 }
 
 
@@ -926,6 +928,7 @@ void on_about(GtkMenuItem *menuitem,
 static void on_intro_show_again_button_toggled(GtkCheckButton *toggle, GromitData *data)
 {
   data->show_intro_on_startup = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (toggle));
+  write_keyfile(data);
 }
 
 void on_intro(GtkMenuItem *menuitem,

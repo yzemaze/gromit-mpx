@@ -1337,7 +1337,6 @@ int main (int argc, char **argv)
   setup_main_app (data, argc, argv);
   gtk_main ();
   shutdown_input_devices(data);
-  write_keyfile(data); // save keyfile config
   g_free (data);
   return 0;
 }
