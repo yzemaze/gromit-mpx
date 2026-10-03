@@ -855,14 +855,6 @@ void douglas_peucker(GList *coords, gfloat epsilon) {
         GList *ranges = push_list_range(NULL, first, last);
         while (ranges != NULL) {
             ranges = pop_list_range(ranges, &first, &last);
-            {
-                int i = 1;
-                GList *tmp = first;
-                while (tmp != last) {
-                    i++;
-                    tmp = tmp->next;
-                }
-            }
 
             gfloat dmax = 0.0;
             GList *max_element = first;

@@ -695,15 +695,12 @@ void setup_main_app (GromitData *data, int argc, char ** argv)
   }
 
   /* COLOURS */
-  g_free(data->white);
   g_free(data->black);
   g_free(data->red);
   g_free(data->transparent);
-  data->white = g_malloc (sizeof (GdkRGBA));
   data->black = g_malloc (sizeof (GdkRGBA));
   data->red   = g_malloc (sizeof (GdkRGBA));
   data->transparent = g_malloc (sizeof (GdkRGBA));
-  gdk_rgba_parse(data->white, "#FFFFFF");
   gdk_rgba_parse(data->black, "#000000");
   gdk_rgba_parse(data->red, "#FF0000");
   gdk_rgba_parse(data->transparent, "rgba(0, 0, 0, 0.0)");

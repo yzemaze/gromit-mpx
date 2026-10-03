@@ -112,7 +112,6 @@ typedef struct
   GdkRGBA         *fill_color;
   GdkRGBA         *font_color;
   cairo_t         *paint_ctx;
-  gdouble         pressure;
   gfloat          textsize;
   gboolean        showlength;
 } GromitPaintContext;
@@ -165,7 +164,6 @@ typedef struct
   guint        undo_keycode;
   gdouble      opacity;
 
-  GdkRGBA     *white;
   GdkRGBA     *black;
   GdkRGBA     *red;
   GdkRGBA     *transparent;
