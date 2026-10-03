@@ -1359,23 +1359,5 @@ gboolean compare_state(GromitState lhs, GromitState rhs)
 
 gchar *key2string(GromitLookupKey key)
 {
-  guint len = 0;
-  gchar *result;
-
-  len = strlen(key.name);
-  result = g_strndup(key.name, len + 4);
-
-  result[len] = 124;
-  
-  // to identify buttons 1-10 we need two bytes (two char)
-  guint buttons = key.state.buttons;
-  gchar buttons_low = key.state.buttons & 255; // 1-8
-  gchar buttons_high = key.state.buttons >> 8 & 255; // 9-10
-
-  result[len + 1] = buttons_high + 48;
-  result[len + 2] = buttons_low + 48;
-  result[len + 3] = key.state.modifiers + 48;
-  result[len + 4] = 0;
-
-  return result;
+  return g_strdup_printf ("%s|%u|%u", key.name, key.state.buttons, key.state.modifiers);
 }
