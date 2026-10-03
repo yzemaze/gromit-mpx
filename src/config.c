@@ -278,7 +278,6 @@ gboolean parse_config (GromitData *data)
   g_scanner_scope_add_symbol (scanner, 2, "snap",      (gpointer) SYM_SNAP);
   g_scanner_scope_add_symbol (scanner, 2, "xlength",   (gpointer) SYM_XLENGTH);
   g_scanner_scope_add_symbol (scanner, 2, "ylength",   (gpointer) SYM_YLENGTH);
-  g_scanner_scope_add_symbol (scanner, 2, "fillcolor", (gpointer) SYM_FILLCOLOR);
   g_scanner_scope_add_symbol (scanner, 2, "start",     (gpointer) SYM_START);
   g_scanner_scope_add_symbol (scanner, 2, "increment", (gpointer) SYM_INCREMENT);
   g_scanner_scope_add_symbol (scanner, 2, "fontcolor", (gpointer) SYM_FONTCOLOR);
