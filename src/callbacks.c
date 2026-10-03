@@ -101,9 +101,17 @@ void on_monitors_changed ( GdkScreen *screen,
 {
   GromitData *data = (GromitData *) user_data;
 
-  // get new sizes
-  data->width = gdk_screen_get_width (data->screen);
-  data->height = gdk_screen_get_height (data->screen);
+  // get new sizes: the bounding box of all monitors, like gdk_screen_get_width/height
+  GdkRectangle bbox;
+  gdk_monitor_get_geometry (gdk_display_get_monitor (data->display, 0), &bbox);
+  for (int i = 1; i < gdk_display_get_n_monitors (data->display); i++)
+    {
+      GdkRectangle geometry;
+      gdk_monitor_get_geometry (gdk_display_get_monitor (data->display, i), &geometry);
+      gdk_rectangle_union (&bbox, &geometry, &bbox);
+    }
+  data->width = bbox.width;
+  data->height = bbox.height;
 
   if(data->debug)
     g_printerr("DEBUG: screen size changed to %d x %d!\n", data->width, data->height);

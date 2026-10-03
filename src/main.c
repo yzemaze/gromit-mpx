@@ -1317,7 +1317,7 @@ int main (int argc, char **argv)
   */
   data->display = gdk_display_get_default ();
   data->screen = gdk_display_get_default_screen (data->display);
-  data->xinerama = gdk_screen_get_n_monitors (data->screen) > 1;
+  data->xinerama = gdk_display_get_n_monitors (data->display) > 1;
   data->composited = gdk_screen_is_composited (data->screen);
   data->root = gdk_screen_get_root_window (data->screen);
   data->width = gdk_window_get_width (data->root);
