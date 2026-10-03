@@ -403,7 +403,7 @@ void release_grab (GromitData *data,
           if(devdata->is_grabbed)
 	  {
 	    gdk_x11_display_error_trap_push(data->display);
-	    gdk_device_ungrab(devdata->device, GDK_CURRENT_TIME);
+	    gdk_seat_ungrab(gdk_device_get_seat(devdata->device));
 	    XSync(GDK_DISPLAY_XDISPLAY(data->display), False);
 	    if(gdk_x11_display_error_trap_pop(data->display))
 	      g_printerr("WARNING: Ungrabbing device '%s' failed.\n", gdk_device_get_name(devdata->device));
@@ -433,7 +433,7 @@ void release_grab (GromitData *data,
 
   if (devdata->is_grabbed)
     {
-      gdk_device_ungrab(devdata->device, GDK_CURRENT_TIME);
+      gdk_seat_ungrab(gdk_device_get_seat(devdata->device));
       devdata->is_grabbed = 0;
       /* workaround buggy GTK3 ? */
       devdata->motion_time = 0;
