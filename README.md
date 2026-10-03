@@ -113,7 +113,7 @@ XInput-Devices you can draw lines with varying width.  It is
 possible to erase something with the other end of the (Wacom) pen.
 
 Undo/redo commands are cumulative. For example, sending two undo commands
-will undo the last two strokes. The maximum undo/redo depth is 4 strokes.
+will undo the last two strokes. The maximum undo/redo depth is 100 strokes.
 
 ### Setting up multi-pointer
 
@@ -283,7 +283,7 @@ It allows for drawing rectangles (with slightly rounded corners) as well as circ
     "magenta square empty" = FRAME (size=10 color="magenta" xlength=100 ylength=100 radius=0);
     "yellow circle filled" = FRAME (size=5 color="yellow" fillcolor="rgba(255, 255, 0, 0.5)" xlength=50 ylength=50 radius=25);
 
-A `COUNTER`-tool that draws a counter within a frame at the clicked location. In addition to the options of `FRAME` there are `fontcolor`, `fontface`, `start` and `increment`. Both `start` and `increment` may be negative, so `increment=-1` counts down.
+A `COUNTER`-tool that draws a counter within a frame at the clicked location. In addition to the options of `FRAME` there are `fontcolor`, `fontface`, `fontsize`, `start` and `increment`. Both `start` and `increment` may be negative, so `increment=-1` counts down.
 
     "counter" = COUNTER (size=2 color="magenta" fillcolor="rgba(255, 255, 255, 0.5)" fontcolor="red" fontface="Arial" xlength=30 ylength=30 radius=15 start=5 increment=1);
 
@@ -301,8 +301,10 @@ If you define a tool with the same name as an input-device
 	"ELAN Touchscreen Eraser (0)" = "Eraser";
 
 Additionally you can limit the Scope to specific combinations of
-Mousebuttons (1,2,3,4,5 or Button1,...,Button5)
+Mousebuttons (1,...,10 or Button1,...,Button10)
 and Modifiers (`SHIFT`, `CONTROL`, `ALT`, `META`, while `ALT==META`).
+Buttons 4 to 7 belong to the scroll wheel, so extra mouse buttons
+usually start at 8.
 
     "Core Pointer" = "red Pen";
     "Core Pointer"[SHIFT] = "blue Pen";
