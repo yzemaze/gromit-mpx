@@ -135,10 +135,10 @@ enum tool_arguments {
 };
 
 /*
- * get "=VALUE", where VALUE is a float
- * returns NAN is an error occurs
+ * get "=VALUE", where VALUE is a float, negative only if allow_negative
+ * returns NAN if an error occurs
  */
-gfloat parse_get_float(GScanner *scanner, const gchar *msg)
+static gfloat parse_get_number(GScanner *scanner, const gchar *msg, gboolean allow_negative)
 {
   GTokenType token = g_scanner_get_next_token (scanner);
   if (token != G_TOKEN_EQUAL_SIGN)
@@ -146,14 +146,26 @@ gfloat parse_get_float(GScanner *scanner, const gchar *msg)
       g_printerr ("Missing \"=\"... aborting\n");
       return NAN;
     }
+  gfloat sign = 1;
   token = g_scanner_get_next_token (scanner);
+  /* the scanner returns a leading minus as a token of its own */
+  if (allow_negative && token == '-')
+    {
+      sign = -1;
+      token = g_scanner_get_next_token (scanner);
+    }
   if (token != G_TOKEN_FLOAT)
     {
       g_printerr ("%s", msg);
       g_printerr ("... aborting\n");
       return NAN;
     }
-  return scanner->value.v_float;
+  return sign * scanner->value.v_float;
+}
+
+gfloat parse_get_float(GScanner *scanner, const gchar *msg)
+{
+  return parse_get_number(scanner, msg, FALSE);
 }
 
 
@@ -567,13 +579,13 @@ gboolean parse_config (GromitData *data)
                         }
                       else if ((intptr_t) scanner->value.v_symbol == SYM_START)
                         {
-                          gfloat v = parse_get_float(scanner, "Missing start (float)");
+                          gfloat v = parse_get_number(scanner, "Missing start (float)", TRUE);
                           if (isnan(v)) goto cleanup;
                           start = v;
                         }
                       else if ((intptr_t) scanner->value.v_symbol == SYM_INCREMENT)
                         {
-                          gfloat v = parse_get_float(scanner, "Missing increment (float)");
+                          gfloat v = parse_get_number(scanner, "Missing increment (float)", TRUE);
                           if (isnan(v)) goto cleanup;
                           increment = v;
                         }

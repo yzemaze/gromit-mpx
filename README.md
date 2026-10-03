@@ -283,7 +283,7 @@ It allows for drawing rectangles (with slightly rounded corners) as well as circ
     "magenta square empty" = FRAME (size=10 color="magenta" xlength=100 ylength=100 radius=0);
     "yellow circle filled" = FRAME (size=5 color="yellow" fillcolor="rgba(255, 255, 0, 0.5)" xlength=50 ylength=50 radius=25);
 
-A `COUNTER`-tool that draws a counter within a frame at the clicked location. In addition to the options of `FRAME` there are `fontcolor`, `fontface`, `start` and `increment`.
+A `COUNTER`-tool that draws a counter within a frame at the clicked location. In addition to the options of `FRAME` there are `fontcolor`, `fontface`, `start` and `increment`. Both `start` and `increment` may be negative, so `increment=-1` counts down.
 
     "counter" = COUNTER (size=2 color="magenta" fillcolor="rgba(255, 255, 255, 0.5)" fontcolor="red" fontface="Arial" xlength=30 ylength=30 radius=15 start=5 increment=1);
 
