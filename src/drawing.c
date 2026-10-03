@@ -177,8 +177,8 @@ void draw_counter (GromitData *data,
 
   if (devdata->cur_context->paint_ctx)
     {
-      char countstr[4];
-      sprintf(countstr, "%d", count);
+      char countstr[12];
+      g_snprintf(countstr, sizeof(countstr), "%d", count);
 
       if (count > 9 || count < -9)
         font_size = font_size * 0.9;
