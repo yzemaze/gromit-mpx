@@ -676,6 +676,7 @@ int parse_args (int argc, char **argv, GromitData *data)
                data->opacity = strtod (argv[i+1], NULL);
                g_printerr ("Opacity set to: %.2f\n", data->opacity);
                gtk_widget_set_opacity(data->win, data->opacity);
+               write_keyfile(data);
                i++;
              }
            else
