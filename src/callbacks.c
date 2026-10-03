@@ -352,7 +352,7 @@ gboolean on_motion (GtkWidget *win,
   // GdkEventMotion->state has only buttons 1-5, keep 6-10
   GromitState newState = devdata->state;
   newState.buttons &= 992; // remove old 1-5, keep 6-10
-  newState.buttons |= (ev->state >> 8) & 1023; // update new 1-5
+  newState.buttons |= (ev->state >> 8) & 31; // update new 1-5, bits above hold the keyboard layout group
   newState.modifiers = ev->state & 255;
 
   // return if there is no button pressed

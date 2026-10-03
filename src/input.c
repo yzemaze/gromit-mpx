@@ -411,6 +411,8 @@ void release_grab (GromitData *data,
 	    devdata->is_grabbed = 0;
             /* workaround buggy GTK3 ? */
 	    devdata->motion_time = 0;
+	    /* releases of buttons held now won't reach us */
+	    devdata->state.buttons = 0;
 	  }
         }
 
@@ -435,6 +437,8 @@ void release_grab (GromitData *data,
       devdata->is_grabbed = 0;
       /* workaround buggy GTK3 ? */
       devdata->motion_time = 0;
+      /* releases of buttons held now won't reach us */
+      devdata->state.buttons = 0;
 
 
       if(data->debug)
