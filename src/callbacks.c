@@ -137,10 +137,7 @@ void on_monitors_changed ( GdkScreen *screen,
   parse_config(data); // also calls paint_context_new() :-(
 
 
-  data->default_pen = paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
-                                         5, 10, 15, 25, 1, 0, 0, 1, 1, data->red, "sans-serif", 20, "", 0, G_MAXUINT);
-  data->default_eraser = paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
-                                            5, 10, 15, 25, 1, 0, 0, 1, 1, data->red, "sans-serif", 20, "", 0, G_MAXUINT);
+  setup_default_tools (data);
 
   if(!data->composited) // set shape
     {

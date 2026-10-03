@@ -209,6 +209,23 @@ void paint_context_free (GromitPaintContext *context)
 }
 
 
+void setup_default_tools (GromitData *data)
+{
+  /* old ones keep the previous backbuffer alive */
+  if (data->default_pen)
+    paint_context_free (data->default_pen);
+  if (data->default_eraser)
+    paint_context_free (data->default_eraser);
+
+  data->default_pen =
+    paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
+                       5, 10, 15, 25, 0, 0, 0, 1, 1, data->red, "sans-serif", 20, "", 1, G_MAXUINT);
+  data->default_eraser =
+    paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
+                       5, 10, 15, 25, 0, 0, 0, 1, 1, data->red, "sans-serif", 20, "", 1, G_MAXUINT);
+}
+
+
 void hide_window (GromitData *data)
 {
   if (!data->hidden)
@@ -926,12 +943,7 @@ void setup_main_app (GromitData *data, int argc, char ** argv)
 
   data->modified = 0;
 
-  data->default_pen =
-    paint_context_new (data, GROMIT_PEN, data->red, data->transparent, 7, 0, GROMIT_ARROW_END,
-                       5, 10, 15, 25, 0, 0, 0, 1, 1, data->red, "sans-serif", 20, "", 1, G_MAXUINT);
-  data->default_eraser =
-    paint_context_new (data, GROMIT_ERASER, data->red, data->transparent, 75, 0, GROMIT_ARROW_END,
-                       5, 10, 15, 25, 0, 0, 0, 1, 1, data->red, "sans-serif", 20, "", 1, G_MAXUINT);
+  setup_default_tools (data);
 
   gdk_event_handler_set ((GdkEventFunc) main_do_event, data, NULL);
   gtk_key_snooper_install (snoop_key_press, data);
