@@ -169,7 +169,7 @@ void on_composited_changed ( GdkScreen *screen,
       // undo shape
       gtk_widget_shape_combine_region(data->win, NULL);
       // re-apply transparency
-      gtk_widget_set_opacity(data->win, 0.75);
+      gtk_widget_set_opacity(data->win, data->opacity);
     }
 
   // set anti-aliasing
