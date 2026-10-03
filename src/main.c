@@ -499,13 +499,21 @@ void select_tool (GromitData *data,
 
 
 
-void snap_undo_state (GromitData *data)
+void snap_undo_state (GromitData *data, GromitPaintContext *context)
 {
   if(data->debug)
     g_printerr ("DEBUG: Snapping undo buffer %d.\n", data->undo_head);
 
   undo_compress(data, data->backbuffer);
   undo_temp_buffer_to_slot(data, data->undo_head);
+
+  if (context && context->type == GROMIT_COUNTER)
+    {
+      data->undo_counter[data->undo_head] = context;
+      data->undo_count[data->undo_head] = context->count;
+    }
+  else
+    data->undo_counter[data->undo_head] = NULL;
 
   // Increment head position
   data->undo_head++;
@@ -531,6 +539,21 @@ void copy_surface (cairo_surface_t *dst, cairo_surface_t *src)
 }
 
 
+/*
+ * like the image, the slot's count and the counter's current count trade places
+ */
+static void undo_swap_counter (GromitData *data, gint undo_slot)
+{
+  GromitPaintContext *counter = data->undo_counter[undo_slot];
+  if (counter)
+    {
+      gint count = counter->count;
+      counter->count = data->undo_count[undo_slot];
+      data->undo_count[undo_slot] = count;
+    }
+}
+
+
 void undo_drawing (GromitData *data)
 {
   if(data->undo_depth <= 0)
@@ -546,6 +569,7 @@ void undo_drawing (GromitData *data)
   undo_compress(data, data->backbuffer);
   undo_decompress(data, data->undo_head, data->backbuffer);
   undo_temp_buffer_to_slot(data, data->undo_head);
+  undo_swap_counter(data, data->undo_head);
 
   GdkRectangle rect = {0, 0, data->width, data->height};
   gdk_window_invalidate_rect(gtk_widget_get_window(data->win), &rect, 0);
@@ -566,6 +590,7 @@ void redo_drawing (GromitData *data)
   undo_compress(data, data->backbuffer);
   undo_decompress(data, data->undo_head, data->backbuffer);
   undo_temp_buffer_to_slot(data, data->undo_head);
+  undo_swap_counter(data, data->undo_head);
 
   data->redo_depth--;
   data->undo_depth++;
@@ -783,6 +808,7 @@ void setup_main_app (GromitData *data, int argc, char ** argv)
     {
       data->undo_buffer_size[i] = 0;
       data->undo_buffer[i] = NULL;
+      data->undo_counter[i] = NULL;
     }
 
   /* EVENTS */

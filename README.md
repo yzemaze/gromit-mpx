@@ -287,7 +287,7 @@ A `COUNTER`-tool that draws a counter within a frame at the clicked location. In
 
     "counter" = COUNTER (size=2 color="magenta" fillcolor="rgba(255, 255, 255, 0.5)" fontcolor="red" fontface="Arial" xlength=30 ylength=30 radius=15 start=5 increment=1);
 
-To start a fresh counter clear the screen. Undo does not reset the counter to the last used value.
+To start a fresh counter clear the screen. Undo and redo restore the counter, too.
 
 A `STAMP`-tool which allows stamping emojis, any other chars or strings. It works almost the same as `COUNTER` – just with `stamp` (instead of start and increment):
 

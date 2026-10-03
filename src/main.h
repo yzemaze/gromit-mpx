@@ -200,6 +200,9 @@ typedef struct
   size_t undo_temp_size;
   size_t undo_temp_used;
   gint   undo_head, undo_depth, redo_depth;
+  /* counter tool state per slot, swapped along with the image */
+  GromitPaintContext *undo_counter[GROMIT_MAX_UNDO];
+  gint   undo_count[GROMIT_MAX_UNDO];
 
   gboolean show_intro_on_startup;
 
@@ -215,7 +218,7 @@ void parse_print_help (gpointer key, gpointer value, gpointer user_data);
 void select_tool (GromitData *data, GdkDevice *device, GdkDevice *slave_device, GromitState state);
 
 void copy_surface (cairo_surface_t *dst, cairo_surface_t *src);
-void snap_undo_state(GromitData *data);
+void snap_undo_state(GromitData *data, GromitPaintContext *context);
 void undo_drawing (GromitData *data);
 void redo_drawing (GromitData *data);
 void undo_compress(GromitData *data, cairo_surface_t *surface);

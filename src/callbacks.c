@@ -132,6 +132,9 @@ void on_monitors_changed ( GdkScreen *screen,
      these depend on the shape surface
   */
   g_hash_table_remove_all(data->tool_config);
+  /* undo must not restore counts into the freed counters */
+  for (int i = 0; i < GROMIT_MAX_UNDO; i++)
+    data->undo_counter[i] = NULL;
 
 
   parse_config(data); // also calls paint_context_new() :-(
@@ -284,7 +287,7 @@ gboolean on_buttonpress (GtkWidget *win,
   devdata->lasty = ev->y;
   devdata->motion_time = ev->time;
 
-  snap_undo_state (data);
+  snap_undo_state (data, devdata->cur_context);
 
   gdk_event_get_axis ((GdkEvent *) ev, GDK_AXIS_PRESSURE, &pressure);
   data->maxwidth = (CLAMP (pressure + line_thickener, 0, 1) *
