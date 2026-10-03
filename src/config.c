@@ -171,6 +171,7 @@ gboolean parse_config (GromitData *data)
 
   GromitPaintType type;
   GdkRGBA *fg_color=NULL, *fill_color=NULL, *font_color=NULL;
+  GdkRGBA fg_color_buf, fill_color_buf, font_color_buf;
   guint width, minwidth, maxwidth;
   gfloat arrowsize;
   guint minlen, maxangle, radius, simplify, snapdist;
@@ -387,7 +388,6 @@ gboolean parse_config (GromitData *data)
 
           if (token == G_TOKEN_LEFT_PAREN)
             {
-              GdkRGBA *color = NULL;
               g_scanner_set_scope (scanner, 2);
               scanner->config->int_2_float = 1;
               token = g_scanner_get_next_token (scanner);
@@ -416,18 +416,15 @@ gboolean parse_config (GromitData *data)
                                           "aborting\n");
                               goto cleanup;
                             }
-                          color = g_malloc (sizeof (GdkRGBA));
-                          if (gdk_rgba_parse (color, scanner->value.v_string))
+                          if (gdk_rgba_parse (&fg_color_buf, scanner->value.v_string))
                             {
-                              fg_color = color;
+                              fg_color = &fg_color_buf;
                             }
                           else
                             {
                               g_printerr ("Unable to parse color. "
                                           "Keeping default.\n");
-                              g_free (color);
                             }
-                          color = NULL;
                         }
                       else if ((intptr_t) scanner->value.v_symbol == SYM_ARROWSIZE)
                         {
@@ -533,18 +530,15 @@ gboolean parse_config (GromitData *data)
                                           "aborting\n");
                               goto cleanup;
                             }
-                          color = g_malloc (sizeof (GdkRGBA));
-                          if (gdk_rgba_parse (color, scanner->value.v_string))
+                          if (gdk_rgba_parse (&fill_color_buf, scanner->value.v_string))
                             {
-                              fill_color = color;
+                              fill_color = &fill_color_buf;
                             }
                           else
                             {
                               g_printerr ("Unable to parse fillcolor. "
                                           "Keeping default.\n");
-                              g_free (color);
                             }
-                          color = NULL;
                         }
                       else if ((intptr_t) scanner->value.v_symbol == SYM_FONTCOLOR)
                         {
@@ -561,18 +555,15 @@ gboolean parse_config (GromitData *data)
                                           "aborting\n");
                               goto cleanup;
                             }
-                          color = g_malloc (sizeof (GdkRGBA));
-                          if (gdk_rgba_parse (color, scanner->value.v_string))
+                          if (gdk_rgba_parse (&font_color_buf, scanner->value.v_string))
                             {
-                              font_color = color;
+                              font_color = &font_color_buf;
                             }
                           else
                             {
                               g_printerr ("Unable to parse fontcolor. "
                                           "Keeping default.\n");
-                              g_free (color);
                             }
-                          color = NULL;
                         }
                       else if ((intptr_t) scanner->value.v_symbol == SYM_START)
                         {
@@ -686,7 +677,6 @@ gboolean parse_config (GromitData *data)
                                        start, increment,
                                        font_color, font_face, font_size, stamp,
                                        minwidth, maxwidth);
-          context->fill_color = fill_color;
           context->textsize = textsize;
           context->showlength = showlength;
           g_hash_table_insert (data->tool_config, key2string(keyName), context);

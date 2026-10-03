@@ -694,11 +694,11 @@ void on_mainapp_selection_received (GtkWidget *widget,
 	      g_printerr("thickness: %d\n", thickness);
 	    }
 
-	  GdkRGBA* color = g_malloc (sizeof (GdkRGBA));
+	  GdkRGBA color;
 	  GdkRGBA *fg_color=data->red;
-	  if (gdk_rgba_parse (color, hex_code))
+	  if (gdk_rgba_parse (&color, hex_code))
 	    {
-	      fg_color = color;
+	      fg_color = &color;
 	    }
 	  else
 	    {
@@ -727,8 +727,7 @@ void on_mainapp_selection_received (GtkWidget *widget,
 	  gdk_window_invalidate_rect(gtk_widget_get_window(data->win), &rect, 0); 
 	  data->painted = 1;
 
-	  g_free(line_ctx);
-	  g_free (color);
+	  paint_context_free (line_ctx);
 	}
     }
  

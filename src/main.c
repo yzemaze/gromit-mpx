@@ -67,9 +67,9 @@ GromitPaintContext *paint_context_new (GromitData *data,
   context->arrow_type = arrowtype;
   context->minwidth = minwidth;
   context->maxwidth = maxwidth;
-  context->paint_color = paint_color;
-  context->fill_color = fill_color;
-  context->font_color = font_color;
+  context->paint_color = gdk_rgba_copy (paint_color);
+  context->fill_color = fill_color ? gdk_rgba_copy (fill_color) : NULL;
+  context->font_color = gdk_rgba_copy (font_color);
   context->radius = radius;
   context->maxangle = maxangle;
   context->simplify = simplify;
@@ -199,8 +199,10 @@ void paint_context_print (gchar *name,
 void paint_context_free (GromitPaintContext *context)
 {
   cairo_destroy(context->paint_ctx);
+  gdk_rgba_free (context->paint_color);
   if (context->fill_color)
-    g_free(context->fill_color);
+    gdk_rgba_free (context->fill_color);
+  gdk_rgba_free (context->font_color);
   g_free (context);
 }
 
