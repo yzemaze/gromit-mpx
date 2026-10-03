@@ -42,6 +42,9 @@
 
 #define GROMIT_WINDOW_EVENTS ( GROMIT_MOUSE_EVENTS | GDK_EXPOSURE_MASK)
 
+/* modifiers tools can be bound to, so locks like CapsLock don't change the tool */
+#define GROMIT_MODIFIERS ( GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK )
+
 /* Atoms used to control Gromit */
 #define GA_CONTROL    gdk_atom_intern ("Gromit/control", FALSE)
 #define GA_STATUS     gdk_atom_intern ("Gromit/status", FALSE)

@@ -273,7 +273,7 @@ gboolean on_buttonpress (GtkWidget *win,
   // add new buttons to GromitState
   GromitState newState = devdata->state;
   newState.buttons |= (ev->button <= 10) ? 1 << (ev->button - 1) : 0;
-  newState.modifiers = ev->state & 255;
+  newState.modifiers = ev->state & GROMIT_MODIFIERS;
 
 
   if (!compare_state(devdata->state, newState) ||
@@ -353,7 +353,7 @@ gboolean on_motion (GtkWidget *win,
   GromitState newState = devdata->state;
   newState.buttons &= 992; // remove old 1-5, keep 6-10
   newState.buttons |= (ev->state >> 8) & 31; // update new 1-5, bits above hold the keyboard layout group
-  newState.modifiers = ev->state & 255;
+  newState.modifiers = ev->state & GROMIT_MODIFIERS;
 
   // return if there is no button pressed
   if(!newState.buttons)
@@ -503,7 +503,7 @@ gboolean on_buttonrelease (GtkWidget *win,
   // remove released button bit from GromitState
   guint button = 1 << (ev->button - 1);
   devdata->state.buttons &= ~button;
-  devdata->state.modifiers = ev->state & 255;
+  devdata->state.modifiers = ev->state & GROMIT_MODIFIERS;
 
   if (!devdata->is_grabbed)
     return FALSE;
