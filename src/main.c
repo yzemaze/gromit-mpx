@@ -633,6 +633,8 @@ void undo_compress(GromitData *data, cairo_surface_t *surface)
           break;
         }
     }
+  data->undo_temp_width = cairo_image_surface_get_width(surface);
+  data->undo_temp_height = rows;
 }
 
 
@@ -648,6 +650,8 @@ void undo_temp_buffer_to_slot(GromitData *data, gint undo_slot)
         data->undo_buffer_size[undo_slot] = required;
       }
     data->undo_buffer_used[undo_slot] = required;
+    data->undo_buffer_width[undo_slot] = data->undo_temp_width;
+    data->undo_buffer_height[undo_slot] = data->undo_temp_height;
     memcpy(data->undo_buffer[undo_slot], data->undo_temp, required);
 }
 
@@ -656,9 +660,19 @@ void undo_temp_buffer_to_slot(GromitData *data, gint undo_slot)
  */
 void undo_decompress(GromitData *data, gint undo_slot, cairo_surface_t *surface)
 {
-  char *dest_data = (char *)cairo_image_surface_get_data(surface);
-  guint bytes_per_row = cairo_image_surface_get_stride(surface);
-  guint rows = cairo_image_surface_get_height(surface);
+  gint width = data->undo_buffer_width[undo_slot];
+  gint height = data->undo_buffer_height[undo_slot];
+  /*
+    a slot from before a monitor change has another size, unpack it at that
+    size and keep it top left, like on_monitors_changed() keeps the drawing
+  */
+  gboolean resized = width != cairo_image_surface_get_width(surface) ||
+                     height != cairo_image_surface_get_height(surface);
+  cairo_surface_t *target = resized ? cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height) : surface;
+
+  char *dest_data = (char *)cairo_image_surface_get_data(target);
+  guint bytes_per_row = cairo_image_surface_get_stride(target);
+  guint rows = cairo_image_surface_get_height(target);
   size_t dest_bytes = rows * bytes_per_row;
 
   char *src_data = data->undo_buffer[undo_slot];
@@ -668,6 +682,13 @@ void undo_decompress(GromitData *data, gint undo_slot, cairo_surface_t *surface)
     g_printerr("Fatal error occurred decompressing image data\n");
     exit(1);
   }
+
+  if (resized)
+    {
+      cairo_surface_mark_dirty(target);
+      copy_surface(surface, target);
+      cairo_surface_destroy(target);
+    }
 }
 
 /*

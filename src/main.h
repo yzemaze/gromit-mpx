@@ -199,9 +199,13 @@ typedef struct
   gchar  *undo_buffer[GROMIT_MAX_UNDO];
   size_t undo_buffer_size[GROMIT_MAX_UNDO];
   size_t undo_buffer_used[GROMIT_MAX_UNDO];
+  /* screen size at snapshot time, monitor changes alter it */
+  gint   undo_buffer_width[GROMIT_MAX_UNDO];
+  gint   undo_buffer_height[GROMIT_MAX_UNDO];
   gchar *undo_temp;
   size_t undo_temp_size;
   size_t undo_temp_used;
+  gint   undo_temp_width, undo_temp_height;
   gint   undo_head, undo_depth, redo_depth;
   /* counter tool state per slot, swapped along with the image */
   GromitPaintContext *undo_counter[GROMIT_MAX_UNDO];
