@@ -649,7 +649,7 @@ gboolean parse_config (GromitData *data)
                                           "Keeping default.\n");
                             }
                         }
-                      else if ((intptr_t) scanner->value.v_string == SYM_TEXTSIZE)
+                      else if ((intptr_t) scanner->value.v_symbol == SYM_TEXTSIZE)
                         {
                           gfloat v = parse_get_float(scanner, "Missing textsize value (float)");
                           if (isnan(v)) goto cleanup;
